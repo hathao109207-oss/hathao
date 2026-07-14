@@ -1,8 +1,0 @@
-{
-    "name": "cineticket/app",
-    "description": "CineTicket booking application",
-    "require": {
-        "php": ">=8.0",
-        "ext-mysqli": "*"
-    }
-}

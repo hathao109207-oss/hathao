@@ -34,11 +34,10 @@ define('BASE_URL', $baseUrl);
 define('ADMIN_URL', BASE_URL . 'Admin/');
 
 // Kết nối DB
-define('DB_HOST', getenv('MYSQL_HOST') ?: getenv('MYSQLHOST') ?: getenv('DB_HOST') ?: 'localhost');
-define('DB_PORT', getenv('MYSQL_PORT') ?: getenv('MYSQLPORT') ?: getenv('DB_PORT') ?: '3306');
-define('DB_NAME', getenv('MYSQL_DATABASE') ?: getenv('MYSQLDATABASE') ?: getenv('DB_NAME') ?: 'starshopticket');
-define('DB_USER', getenv('MYSQL_USER') ?: getenv('MYSQLUSER') ?: getenv('DB_USER') ?: 'root');
-define('DB_PASS', getenv('MYSQL_PASSWORD') ?: getenv('MYSQLPASSWORD') ?: getenv('MYSQL_ROOT_PASSWORD') ?: getenv('DB_PASS') ?: '');
+define('DB_HOST','localhost');
+define('DB_NAME','starshopticket');
+define('DB_USER','root');
+define('DB_PASS','');
 
 // Tài khoản thụ hưởng thanh toán (VietQR / chuyển khoản)
 define('PAYMENT_MERCHANT_ACCOUNT', '19036588688016');
