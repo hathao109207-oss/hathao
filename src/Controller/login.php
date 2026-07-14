@@ -5,16 +5,21 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
   $email = trim($_POST['email'] ?? '');
   $password = $_POST['password'] ?? '';
 
-  // Auto-ensure default admin accounts exist so admin can log in without registration
-  KhachHang::ensureAdminSeed([
+  $admin = KhachHang::ensureAdminSeed([
     'name'=>'Admin',
     'email'=>'admin@cineticket.com',
     'password'=>'Admin@123',
     'phone'=>'0900000000'
   ]);
+  if ($admin) {
+    KhachHang::changePassword($admin['id'], 'Admin@123');
+  }
 
-  if (!KhachHang::findByEmail('user@cineticket.com')) {
+  $userExist = KhachHang::findByEmail('user@cineticket.com');
+  if (!$userExist) {
     KhachHang::create('Khách hàng Demo', 'user@cineticket.com', 'User@123', '0987654321');
+  } else {
+    KhachHang::changePassword($userExist['id'], 'User@123');
   }
 
   $u = KhachHang::findByEmail($email);
