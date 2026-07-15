@@ -231,12 +231,73 @@
 
     syncSeatClasses(grid);
   });
-
   document.querySelectorAll('.seat-page a[href]').forEach(function(link) {
-    link.addEventListener('click', function() {
+    link.addEventListener('click', function(e) {
       if (link.classList.contains('showtime-btn') || link.getAttribute('href').indexOf('set_showtime=') !== -1) {
-        // Discard selections on the old showtime when changing showtime to avoid race condition re-saving old seats
+        e.preventDefault();
         isDirty = false;
+        
+        var btn = link;
+        var url = btn.getAttribute('href') + '&ajax=1';
+        var list = btn.closest('.showtime-list');
+        
+        setSaveStatus('Đang chuyển suất chiếu...', 'is-saving');
+        
+        fetch(url, {
+          method: 'GET',
+          credentials: 'same-origin'
+        })
+        .then(function(response) {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(function(res) {
+          if (!res.ok) {
+            setSaveStatus(res.message || 'Không thể chuyển suất chiếu.', 'is-error');
+            alert(res.message || 'Không thể chuyển suất chiếu.');
+            return;
+          }
+          
+          // Update active class on showtime buttons
+          if (list) {
+            list.querySelectorAll('.showtime-btn').forEach(function(b) {
+              b.classList.remove('active');
+            });
+          }
+          btn.classList.add('active');
+          
+          // Update seats in grid
+          var reserved = res.reservedSeats || {};
+          var mine = res.selectedSeats || [];
+          var orderId = parseInt('<?= (int)$order_id ?>', 10);
+          
+          document.querySelectorAll('.seat-grid').forEach(function(grid) {
+            grid.querySelectorAll('input[type="checkbox"]').forEach(function(cb) {
+              var code = cb.value;
+              var isLocked = reserved.hasOwnProperty(code) && reserved[code] !== orderId;
+              var isMine = mine.indexOf(code) !== -1;
+              
+              cb.checked = isMine;
+              cb.disabled = isLocked;
+              
+              var label = cb.closest('.seat');
+              if (label) {
+                label.classList.toggle('seat-disabled', isLocked);
+                label.classList.toggle('seat-checked', isMine);
+              }
+            });
+          });
+          
+          isDirty = false;
+          setSaveStatus('Đã đổi suất chiếu.', 'is-success');
+        })
+        .catch(function(err) {
+          setSaveStatus('Lỗi kết nối khi đổi suất chiếu.', 'is-error');
+          console.error(err);
+        });
+        
         return;
       }
       if (!isDirty) return;

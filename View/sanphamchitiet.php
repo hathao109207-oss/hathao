@@ -67,7 +67,7 @@
   }
 
   .movie-title-detail {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Be Vietnam Pro', sans-serif;
     font-size: clamp(24px, 4vw, 38px);
     font-weight: 900;
     color: #fff;
@@ -78,7 +78,7 @@
   .movie-price-tag {
     font-size: 32px;
     font-weight: 900;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Be Vietnam Pro', sans-serif;
     background: linear-gradient(135deg, #ff6b35, #f28123);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -91,7 +91,7 @@
     font-weight: 400;
     color: rgba(255,255,255,0.4);
     -webkit-text-fill-color: rgba(255,255,255,0.4);
-    font-family: 'Inter', sans-serif;
+    font-family: 'Be Vietnam Pro', sans-serif;
   }
 
   .movie-desc-label {
@@ -240,7 +240,9 @@
           <?php
             // Group showtimes by cinema
             $cinemaGroup = [];
+            $firstShowtimeId = 0;
             if (!empty($showtimes) && is_array($showtimes)) {
+                $firstShowtimeId = (int)$showtimes[0]['id'];
                 foreach ($showtimes as $st) {
                     $cName = !empty($st['cinema_name']) ? $st['cinema_name'] : 'Rạp hệ thống';
                     $label = date('H:i ', strtotime($st['show_time'])) . date('d/m', strtotime($st['show_date']));
@@ -255,23 +257,7 @@
           <form method="post" action="index.php?act=addcart">
             <?= csrf_field() ?>
             <input type="hidden" name="movie_id" value="<?= (int)$movie['id'] ?>">
-            
-            <div class="movie-qty-control mb-3">
-              <span class="movie-qty-label">Chọn rạp:</span>
-              <select id="selectCinema" class="form-control text-white" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; height: 44px; width: 100%; max-width: 300px; padding: 0 12px; appearance: auto;" required>
-                <option value="" style="background: #1a1e29; color: #fff;">-- Chọn rạp --</option>
-                <?php foreach (array_keys($cinemaGroup) as $cName): ?>
-                  <option value="<?= htmlspecialchars($cName) ?>" style="background: #1a1e29; color: #fff;"><?= htmlspecialchars($cName) ?></option>
-                <?php endforeach; ?>
-              </select>
-            </div>
-
-            <div class="movie-qty-control mb-3">
-              <span class="movie-qty-label">Suất chiếu:</span>
-              <select id="selectShowtime" name="showtime_id" class="form-control text-white" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; height: 44px; width: 100%; max-width: 300px; padding: 0 12px; appearance: auto;" required disabled>
-                <option value="" style="background: #1a1e29; color: #fff;">-- Chọn thời gian --</option>
-              </select>
-            </div>
+            <input type="hidden" name="showtime_id" value="<?= $firstShowtimeId ?>">
 
             <div class="movie-qty-control mb-3">
               <span class="movie-qty-label">Số lượng vé:</span>
@@ -324,10 +310,10 @@
             width: 90%;
             max-width: 800px;
             background: #000;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: visible;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
+            border: 4px solid #b39454;
             transform: scale(0.9);
             transition: transform 0.3s ease;
             z-index: 10000;
@@ -337,26 +323,30 @@
           }
           .trailer-modal-close {
             position: absolute;
-            top: 10px;
-            right: 15px;
+            top: -40px;
+            right: 0;
             background: none;
             border: none;
             color: #fff;
-            font-size: 30px;
+            font-size: 36px;
             line-height: 1;
             cursor: pointer;
-            opacity: 0.7;
-            transition: opacity 0.2s;
+            opacity: 0.8;
+            transition: all 0.2s ease;
             z-index: 10001;
+            padding: 0;
           }
           .trailer-modal-close:hover {
             opacity: 1;
+            color: #b39454;
+            transform: scale(1.1);
           }
           .trailer-video-responsive {
             position: relative;
             padding-bottom: 56.25%; /* 16:9 ratio */
             height: 0;
             overflow: hidden;
+            border-radius: 2px;
           }
           .trailer-video-responsive iframe {
             position: absolute;
@@ -368,30 +358,9 @@
           </style>
 
           <script>
-            (function($) {
-              const showtimesData = <?= json_encode($cinemaGroup, JSON_UNESCAPED_UNICODE) ?>;
-              const $selectCinema = $('#selectCinema');
-              const $selectShowtime = $('#selectShowtime');
-
-              $selectCinema.on('change', function() {
-                const cinemaName = $(this).val();
-                $selectShowtime.empty().append('<option value="" style="background: #1a1e29; color: #fff;">-- Chọn thời gian --</option>');
-                
-                if (!cinemaName || !showtimesData[cinemaName]) {
-                  $selectShowtime.prop('disabled', true);
-                  return;
-                }
-                
-                const list = showtimesData[cinemaName];
-                list.forEach(function(item) {
-                  $selectShowtime.append('<option value="' + item.id + '" style="background: #1a1e29; color: #fff;">' + item.label + '</option>');
-                });
-                $selectShowtime.prop('disabled', false);
-              });
-
-              // Trailer lightbox logic
-              const $modal = $('#trailerModal');
-              const $iframe = $('#trailerIframe');
+            document.addEventListener('DOMContentLoaded', function() {
+              const modal = document.getElementById('trailerModal');
+              const iframe = document.getElementById('trailerIframe');
               
               function getYouTubeId(url) {
                 if (!url) return null;
@@ -400,23 +369,29 @@
                 return (match && match[2].length === 11) ? match[2] : null;
               }
 
-              $('.btn-play-trailer').on('click', function(e) {
-                e.preventDefault();
-                const url = $(this).data('trailer-url');
-                const ytId = getYouTubeId(url);
-                if (ytId) {
-                  $iframe.attr('src', 'https://www.youtube.com/embed/' + ytId + '?autoplay=1');
-                  $modal.removeClass('d-none');
-                } else {
-                  alert('Không tìm thấy đường dẫn video trailer hợp lệ!');
-                }
+              const playBtns = document.querySelectorAll('.btn-play-trailer');
+              playBtns.forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                  e.preventDefault();
+                  const url = btn.getAttribute('data-trailer-url');
+                  const ytId = getYouTubeId(url);
+                  if (ytId) {
+                    iframe.setAttribute('src', 'https://www.youtube.com/embed/' + ytId + '?autoplay=1');
+                    modal.classList.remove('d-none');
+                  } else {
+                    alert('Không tìm thấy đường dẫn video trailer hợp lệ!');
+                  }
+                });
               });
 
-              $('.trailer-modal-close, .trailer-modal-overlay').on('click', function() {
-                $modal.addClass('d-none');
-                $iframe.attr('src', '');
+              const closeElements = document.querySelectorAll('.trailer-modal-close, .trailer-modal-overlay');
+              closeElements.forEach(function(el) {
+                el.addEventListener('click', function() {
+                  modal.classList.add('d-none');
+                  iframe.setAttribute('src', '');
+                });
               });
-            })(jQuery);
+            });
           </script>
 
           <a href="index.php?act=sanpham" class="back-link">

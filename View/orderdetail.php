@@ -1,7 +1,7 @@
 <style>
   /* Order Detail Premium */
   .order-detail-title {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Be Vietnam Pro', sans-serif;
     font-size: 26px;
     font-weight: 800;
     color: #fff;
@@ -58,69 +58,7 @@
   }
 
   .total-highlight .label { color: rgba(255,255,255,0.65); font-size: 14px; }
-  .total-highlight .amount { font-family: 'Poppins',sans-serif; font-size: 22px; font-weight: 800; color: #ff6b35; }
-</style>
-
-<div class="container mt-5 mb-5">
-  <div class="order-detail-title">
-    font-family: 'Poppins', sans-serif;
-    font-size: 26px;
-    font-weight: 800;
-    color: #fff;
-    margin-bottom: 28px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .order-detail-title span.order-id {
-    background: rgba(255,107,53,0.12);
-    color: #ff6b35;
-    padding: 4px 14px;
-    border-radius: 999px;
-    font-size: 18px;
-  }
-
-  .seat-chip {
-    display: inline-flex;
-    align-items: center;
-    background: rgba(255,107,53,0.12);
-    color: #ff6b35;
-    border: 1px solid rgba(255,107,53,0.3);
-    border-radius: 8px;
-    padding: 3px 10px;
-    font-size: 13px;
-    font-weight: 700;
-    margin: 2px;
-  }
-
-  .seat-progress {
-    background: rgba(255,255,255,0.06);
-    border-radius: 999px;
-    height: 8px;
-    margin-bottom: 12px;
-    overflow: hidden;
-  }
-
-  .seat-progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, #ff6b35, #f28123);
-    border-radius: 999px;
-    transition: width 0.6s ease;
-  }
-
-  .total-highlight {
-    background: rgba(255,107,53,0.08);
-    border: 1px solid rgba(255,107,53,0.2);
-    border-radius: 12px;
-    padding: 16px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .total-highlight .label { color: rgba(255,255,255,0.65); font-size: 14px; }
-  .total-highlight .amount { font-family: 'Poppins',sans-serif; font-size: 22px; font-weight: 800; color: #ff6b35; }
+  .total-highlight .amount { font-family: 'Be Vietnam Pro',sans-serif; font-size: 22px; font-weight: 800; color: #ff6b35; }
 
   /* Status Timeline */
   .status-timeline {

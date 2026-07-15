@@ -51,6 +51,11 @@ if (isset($_GET['set_showtime']) && isset($_GET['movie_id'])) {
 
   if (empty($itemByMovie[$movieId])) {
     error_log('[seat] selected movie_id not in order: ' . $requestContext);
+    if (isset($_GET['ajax'])) {
+      header('Content-Type: application/json; charset=UTF-8');
+      echo json_encode(['ok' => false, 'message' => 'Phim này không thuộc đơn hàng.']);
+      exit;
+    }
     $_SESSION['flash_error'] = 'Phim này không thuộc đơn hàng.';
     header('Location: index.php?act=seat&order_id=' . $order_id); exit;
   }
@@ -58,6 +63,11 @@ if (isset($_GET['set_showtime']) && isset($_GET['movie_id'])) {
   $st = ShowTime::findByMovieId($showtimeId, $movieId);
   if (!$st) {
     error_log('[seat] invalid showtime selected: ' . $requestContext);
+    if (isset($_GET['ajax'])) {
+      header('Content-Type: application/json; charset=UTF-8');
+      echo json_encode(['ok' => false, 'message' => 'Suất chiếu không hợp lệ.']);
+      exit;
+    }
     $_SESSION['flash_error'] = 'Suất chiếu không hợp lệ.';
     header('Location: index.php?act=seat&order_id=' . $order_id . '&movie_id=' . $movieId); exit;
   }
@@ -66,6 +76,21 @@ if (isset($_GET['set_showtime']) && isset($_GET['movie_id'])) {
   $stmt->bind_param("iii", $showtimeId, $order_id, $movieId);
   $stmt->execute();
   SeatReservation::clearByOrderMovie($order_id, $movieId);
+
+  if (isset($_GET['ajax'])) {
+    header('Content-Type: application/json; charset=UTF-8');
+    $reserved = SeatReservation::reservedByShowtime($showtimeId);
+    $selected = SeatReservation::byOrderAndShowtime($order_id, $showtimeId);
+    echo json_encode([
+      'ok' => true,
+      'message' => 'Đã đổi suất chiếu thành công.',
+      'showtime_id' => $showtimeId,
+      'reservedSeats' => $reserved,
+      'selectedSeats' => $selected
+    ]);
+    exit;
+  }
+
   header('Location: index.php?act=seat&order_id=' . $order_id . '&movie_id=' . $movieId); exit;
 }
 

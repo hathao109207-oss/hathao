@@ -447,14 +447,21 @@ body {
 
 .premium-input {
   width: 100%;
-  padding: 10px 14px;
-  font-size: 14px;
+  padding: 8px 12px !important;
+  height: 42px !important;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
   border: 1px solid var(--border-color);
   border-radius: 8px;
   outline: none;
   background-color: #fff;
   transition: all 0.2s ease;
-  box-sizing: border-box;
+  box-sizing: border-box !important;
+}
+
+textarea.premium-input {
+  height: auto !important;
+  min-height: 100px !important;
 }
 
 .premium-input:focus {

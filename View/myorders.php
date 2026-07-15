@@ -1,7 +1,7 @@
 <style>
   /* My Orders Premium Styles */
   .orders-page-title {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Be Vietnam Pro', sans-serif;
     font-size: 28px;
     font-weight: 800;
     color: #fff;

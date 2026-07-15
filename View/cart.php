@@ -110,7 +110,7 @@
   .cart-total-amount {
     font-size: 32px;
     font-weight: 900;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Be Vietnam Pro', sans-serif;
     background: linear-gradient(135deg, #ff6b35, #f28123);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;

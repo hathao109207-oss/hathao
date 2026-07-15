@@ -20,7 +20,7 @@
     border: 1px solid rgba(255,255,255,0.12);
     border-radius: 12px;
     color: #fff;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Be Vietnam Pro', sans-serif;
     font-size: 14px;
     padding: 12px 16px;
     transition: all 0.25s ease;
@@ -102,7 +102,7 @@
 
         <div class="col-lg-4">
           <div class="order-details-wrap">
-            <h5 style="color:#fff; font-family:'Poppins',sans-serif; font-weight:700; margin-bottom:20px; font-size:16px; text-transform:uppercase; letter-spacing:1px;">
+            <h5 style="color:#fff; font-family:'Be Vietnam Pro',sans-serif; font-weight:700; margin-bottom:20px; font-size:16px; text-transform:uppercase; letter-spacing:1px;">
               🎟 Tóm tắt đơn hàng
             </h5>
             <table class="order-details" style="width:100%;">

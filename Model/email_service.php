@@ -73,8 +73,8 @@ class EmailService {
             'ts' => time()
         ], JSON_UNESCAPED_UNICODE);
 
-        // Use Google Charts QR API (highly trusted, not blocked by Gmail proxy)
-        $qrUrl = 'https://chart.googleapis.com/chart?cht=qr&chs=200x200&choe=UTF-8&chl=' . urlencode($qrData);
+        // Use QR Server API (highly stable, reliable, and not deprecated like Google Charts)
+        $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' . urlencode($qrData);
 
         $ticketRows = '';
         foreach ($items as $it) {

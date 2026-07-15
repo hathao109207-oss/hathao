@@ -6,11 +6,14 @@ $act = $_GET['act'] ?? 'home';
 $isSeatAutosave = $act === 'seat'
   && ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST'
   && isset($_POST['autosave']);
+$isSeatShowtimeAjax = $act === 'seat'
+  && isset($_GET['set_showtime'])
+  && isset($_GET['ajax']);
 $isPaymentAjax = $act === 'payment'
   && ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST'
   && !empty($_POST['action'])
   && in_array($_POST['action'], ['search_bank', 'select_method'], true);
-$isAjaxRequest = $isSeatAutosave || $isPaymentAjax;
+$isAjaxRequest = $isSeatAutosave || $isSeatShowtimeAjax || $isPaymentAjax;
 $pageError = null;
 
 if (!$isAjaxRequest) {

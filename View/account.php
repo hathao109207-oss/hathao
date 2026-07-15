@@ -20,7 +20,7 @@
     font-size: 24px;
     font-weight: 800;
     color: #ff6b35;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Be Vietnam Pro', sans-serif;
   }
   .user-stat-card .stat-label {
     font-size: 12px;
