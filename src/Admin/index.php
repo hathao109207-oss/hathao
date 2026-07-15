@@ -5,6 +5,7 @@ require_once __DIR__ . '/../Model/loaihang.php';
 require_once __DIR__ . '/../Model/hoadon.php';
 require_once __DIR__ . '/../Model/seat.php';
 require_once __DIR__ . '/../Model/showtime.php';
+require_once __DIR__ . '/../Model/payment.php';
 
 if (empty($_SESSION['user']) || ($_SESSION['user']['role'] ?? '') !== 'admin') {
   header('Location: ../index.php?act=login'); exit;

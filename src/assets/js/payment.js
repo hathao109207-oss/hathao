@@ -9,7 +9,7 @@
   var baseUrl = app.data('base-url') || '/';
 
   var state = {
-    method: null,
+    method: 'qr_code',
     bankCode: null,
     bank: null,
     qr: null,
@@ -152,20 +152,6 @@
       startCountdown(15 * 60);
     }
 
-    if (state.method === 'bank_transfer' && data.transfer) {
-      $('#panelBank').removeClass('d-none');
-      $('#bankTransferName').text(data.bank.short_name + ' - ' + data.bank.name);
-      $('#bankAccountNumber').text(data.transfer.account_number);
-      $('#bankAccountHolder').text(data.transfer.account_holder);
-      $('#bankAmount').text(formatMoney(data.transfer.amount));
-      $('#bankTransferContent').text(data.transfer.transfer_content);
-    }
-
-    if (state.method === 'credit_card') {
-      $('#panelCard').removeClass('d-none');
-      $('#cardBankName').val(data.bank.short_name + ' - ' + data.bank.name);
-    }
-
     $('#formBankCode').val(state.bankCode);
     syncConfirmForm();
   }
@@ -185,12 +171,13 @@
   }
 
   function syncConfirmForm() {
-    $('#formTransactionRef').val($('#transactionRef').val() || '');
-    $('#formAccountHolder').val($('#cardName').val() || '');
-    $('#formCardNumber').val(($('#cardNumber').val() || '').replace(/\s/g, ''));
-    $('#formCardName').val($('#cardName').val() || '');
-    $('#formCardExpiry').val($('#cardExpiry').val() || '');
-    $('#formCardCvv').val($('#cardCvv').val() || '');
+    // Hidden fields sync if any
+  }
+
+  function checkConfirmFormState() {
+    var hasFile = $('#paymentProof')[0] && $('#paymentProof')[0].files && $('#paymentProof')[0].files.length > 0;
+    var isChecked = $('#confirmCheck').is(':checked');
+    $('#btnSubmitPayment').prop('disabled', !(isChecked && hasFile));
   }
 
   function validateBeforeSubmit() {
@@ -198,16 +185,10 @@
       showToast('Vui lòng chọn phương thức và ngân hàng.');
       return false;
     }
-    if (state.method === 'bank_transfer' && !$('#transactionRef').val().trim()) {
-      showToast('Vui lòng nhập mã giao dịch.');
+    var proofInput = $('#paymentProof')[0];
+    if (!proofInput || !proofInput.files || !proofInput.files.length) {
+      showToast('Vui lòng tải lên ảnh chụp màn hình thanh toán.');
       return false;
-    }
-    if (state.method === 'credit_card') {
-      var num = ($('#cardNumber').val() || '').replace(/\D/g, '');
-      if (num.length < 13 || !$('#cardName').val().trim() || !$('#cardExpiry').val().trim() || !$('#cardCvv').val().trim()) {
-        showToast('Vui lòng nhập đầy đủ thông tin thẻ.');
-        return false;
-      }
     }
     if (!$('#confirmCheck').is(':checked')) {
       showToast('Vui lòng xác nhận đã thanh toán.');
@@ -259,10 +240,16 @@
 
   $('#paymentProof').on('change', function () {
     var file = this.files[0];
-    if (!file) return;
+    if (!file) {
+      $('#proofPreview').addClass('d-none').find('img').attr('src', '');
+      checkConfirmFormState();
+      return;
+    }
     if (file.size > 5 * 1024 * 1024) {
       showToast('Ảnh tối đa 5MB.');
       this.value = '';
+      $('#proofPreview').addClass('d-none').find('img').attr('src', '');
+      checkConfirmFormState();
       return;
     }
     var reader = new FileReader();
@@ -270,60 +257,24 @@
       $('#proofPreview').removeClass('d-none').find('img').attr('src', e.target.result);
     };
     reader.readAsDataURL(file);
-  });
-
-  $('#cardNumber').on('input', function () {
-    var v = $(this).val().replace(/\D/g, '').substring(0, 16);
-    var formatted = v.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
-    $(this).val(formatted);
-    var display = formatted || '•••• •••• •••• ••••';
-    $('#ccVisualNumber').text(display);
-    syncConfirmForm();
-  });
-
-  $('#cardName').on('input', function () {
-    var v = ($(this).val() || 'TÊN CHỦ THẺ').toUpperCase();
-    $('#ccVisualName').text(v);
-    syncConfirmForm();
-  });
-
-  $('#cardExpiry').on('input', function () {
-    var v = $(this).val().replace(/\D/g, '').substring(0, 4);
-    if (v.length >= 3) v = v.substring(0, 2) + '/' + v.substring(2);
-    $(this).val(v);
-    $('#ccVisualExpiry').text(v || 'MM/YY');
-    syncConfirmForm();
+    checkConfirmFormState();
   });
 
   $('#confirmCheck').on('change', function () {
-    $('#btnSubmitPayment').prop('disabled', !this.checked);
+    checkConfirmFormState();
     if (this.checked) setStepper(4);
   });
 
-  $('#transactionRef, #cardCvv').on('input', syncConfirmForm);
-
   $('#paymentConfirmForm').on('submit', function (e) {
-    syncConfirmForm();
     if (!validateBeforeSubmit()) {
       e.preventDefault();
       return;
-    }
-    var proofInput = $('#paymentProof')[0];
-    if (proofInput && proofInput.files.length) {
-      var dt = new DataTransfer();
-      dt.items.add(proofInput.files[0]);
-      var hiddenFile = document.createElement('input');
-      hiddenFile.type = 'file';
-      hiddenFile.name = 'payment_proof';
-      hiddenFile.files = dt.files;
-      hiddenFile.style.display = 'none';
-      this.appendChild(hiddenFile);
     }
     $('#btnSubmitPayment').prop('disabled', true);
     $('#btnSubmitPayment .btn-text').addClass('d-none');
     $('#btnSubmitPayment .btn-loading').removeClass('d-none');
   });
 
-  setStepper(1);
+  setStepper(2);
 
 })(jQuery);

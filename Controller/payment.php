@@ -143,45 +143,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'confirm_payment') {
         if (!$bank && $bankCode) {
             $bank = PaymentManager::getBankByCode($bankCode);
         }
-        $allowedMethods = ['qr_code', 'bank_transfer', 'credit_card'];
+        $allowedMethods = ['qr_code'];
         if (!in_array($method, $allowedMethods, true)) {
             throw new InvalidArgumentException('Phương thức thanh toán không hợp lệ.');
         }
         if (empty($_POST['confirm_check'])) {
             throw new InvalidArgumentException('Vui lòng xác nhận đã thanh toán.');
         }
+        if (empty($_FILES['payment_proof']['tmp_name'])) {
+            throw new InvalidArgumentException('Vui lòng tải lên ảnh chụp màn hình thanh toán.');
+        }
 
-        $transactionRef = trim($_POST['transaction_ref'] ?? '');
-        $accountHolder = trim($_POST['account_holder'] ?? '');
+        $transactionRef = 'QR-' . $order_id . '-' . time();
+        $accountHolder = $order['customer_name'] ?? '';
         $accountNumber = null;
 
-        if ($method === 'bank_transfer' && $transactionRef === '') {
-            throw new InvalidArgumentException('Vui lòng nhập mã giao dịch.');
-        }
-        if ($method === 'credit_card') {
-            $cardNumber = preg_replace('/\D/', '', $_POST['card_number'] ?? '');
-            $cardName = trim($_POST['card_name'] ?? '');
-            $cardExpiry = trim($_POST['card_expiry'] ?? '');
-            $cardCvv = trim($_POST['card_cvv'] ?? '');
-            if (strlen($cardNumber) < 13 || $cardName === '' || $cardExpiry === '' || $cardCvv === '') {
-                throw new InvalidArgumentException('Vui lòng nhập đầy đủ thông tin thẻ.');
-            }
-            $accountNumber = PaymentManager::maskCardNumber($cardNumber);
-            $accountHolder = $cardName;
-            $transactionRef = $transactionRef ?: ('CARD-' . strtoupper(substr(md5($cardNumber . $order_id), 0, 10)));
-        }
-        if ($method === 'qr_code') {
-            $transactionRef = $transactionRef ?: ('QR-' . $order_id . '-' . time());
-            $accountHolder = $accountHolder ?: ($order['customer_name'] ?? '');
-        }
-        if ($method === 'bank_transfer') {
-            $accountHolder = $accountHolder ?: ($order['customer_name'] ?? '');
-        }
-
-        $proofPath = null;
-        if (!empty($_FILES['payment_proof']['tmp_name'])) {
-            $proofPath = PaymentManager::savePaymentProof($order_id, $_FILES['payment_proof']);
-        }
+        $proofPath = PaymentManager::savePaymentProof($order_id, $_FILES['payment_proof']);
 
         $parsedNote = HoaDon::parseCustomerNote($order['customer_note'] ?? '');
         $newNote = HoaDon::buildCustomerNote($parsedNote['plain_note'] ?? '', $snackItems);

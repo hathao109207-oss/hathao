@@ -6,17 +6,21 @@ class GioHang {
         if (!isset($_SESSION[self::$key])) $_SESSION[self::$key] = [];
     }
 
-    public static function add($movie_id, $title, $price, $qty=1){
+    public static function add($movie_id, $title, $price, $qty=1, $showtime_id=null){
         self::init();
         $movie_id = (int)$movie_id; $qty = max(1,(int)$qty);
         if (isset($_SESSION[self::$key][$movie_id])) {
             $_SESSION[self::$key][$movie_id]['qty'] += $qty;
+            if ($showtime_id !== null) {
+                $_SESSION[self::$key][$movie_id]['showtime_id'] = (int)$showtime_id;
+            }
         } else {
             $_SESSION[self::$key][$movie_id] = [
                 'movie_id'=>$movie_id,
                 'title'=>$title,
                 'price'=>(int)$price,
-                'qty'=>$qty
+                'qty'=>$qty,
+                'showtime_id'=>$showtime_id !== null ? (int)$showtime_id : null
             ];
         }
     }

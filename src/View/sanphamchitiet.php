@@ -45,53 +45,181 @@
         <p class="single-product-pricing"><span><?= htmlspecialchars($movie['genre_name'] ?? 'Phim') ?></span> <?= number_format($movie['price']) ?>đ / vé</p>
         <p class="movie-description"><?= nl2br(htmlspecialchars($movie['description'])) ?></p>
 
+        <?php
+          // Group showtimes by cinema
+          $cinemaGroup = [];
+          if (!empty($showtimes) && is_array($showtimes)) {
+              foreach ($showtimes as $st) {
+                  $cName = !empty($st['cinema_name']) ? $st['cinema_name'] : 'Rạp hệ thống';
+                  $label = date('H:i ', strtotime($st['show_time'])) . date('d/m', strtotime($st['show_date']));
+                  $cinemaGroup[$cName][] = [
+                      'id' => (int)$st['id'],
+                      'label' => $label
+                  ];
+              }
+          }
+        ?>
+
         <form method="post" action="index.php?act=addcart" class="mt-3">
           <?= csrf_field() ?>
           <input type="hidden" name="movie_id" value="<?= (int)$movie['id'] ?>">
+          
+          <div class="form-group mb-3">
+            <label class="font-weight-bold">Chọn rạp:</label>
+            <select id="selectCinema" class="form-control" style="max-width: 320px;" required>
+              <option value="">-- Chọn rạp --</option>
+              <?php foreach (array_keys($cinemaGroup) as $cName): ?>
+                <option value="<?= htmlspecialchars($cName) ?>"><?= htmlspecialchars($cName) ?></option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+
+          <div class="form-group mb-3">
+            <label class="font-weight-bold">Chọn suất chiếu:</label>
+            <select id="selectShowtime" name="showtime_id" class="form-control" style="max-width: 320px;" required disabled>
+              <option value="">-- Chọn thời gian --</option>
+            </select>
+          </div>
+
           <div class="form-inline">
             <label class="mr-2">Số lượng:</label>
             <input type="number" name="qty" class="form-control mr-2" min="1" value="1" style="width:120px">
             <button type="submit" class="cart-btn"><i class="fas fa-ticket-alt"></i> Đặt vé</button>
-            <a href="trailer.php?id=<?= (int)$movie['id'] ?>" class="ml-2" style="display:inline-block;padding:10px 18px;background:#e74c3c;color:#fff;border-radius:24px;font-weight:600;"><i class="fas fa-play-circle"></i> Xem trailer</a>
+            <a href="#" class="ml-2 btn-play-trailer" data-trailer-url="<?= htmlspecialchars($movie['trailer_url'] ?? '') ?>" style="display:inline-block;padding:10px 18px;background:#e74c3c;color:#fff;border-radius:24px;font-weight:600;"><i class="fas fa-play-circle"></i> Xem trailer</a>
           </div>
         </form>
 
-        <h4 class="mt-4">Chọn suất chiếu & Đặt vé nhanh</h4>
-        <?php if (empty($showtimes)): ?>
-          <p class="text-muted font-italic">Chưa có suất chiếu nào cho phim này.</p>
-        <?php else: ?>
-          <div class="showtime-list mt-2 d-flex flex-column align-items-stretch" style="gap: 10px;">
-            <?php foreach ($showtimes as $t): ?>
-              <?php
-                $labelTime = date('H:i', strtotime($t['show_time']));
-                $labelDate = date('d/m', strtotime($t['show_date']));
-              ?>
-              <form class="showtime-quick-form d-flex justify-content-between align-items-center p-3 mb-2 rounded border" 
-                    style="background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.08) !important;" 
-                    method="post" action="index.php?act=quickseat">
-                <input type="hidden" name="showtime_id" value="<?= (int)$t['id'] ?>">
-                <div class="text-left">
-                  <span class="font-weight-bold text-danger" style="font-size:15px;"><?= htmlspecialchars($labelTime) ?></span>
-                  <span class="text-muted ml-2 small"><?= htmlspecialchars($labelDate) ?></span>
-                  <?php if (!empty($t['cinema_name'])): ?>
-                    <span class="d-block text-secondary small mt-1">
-                      <i class="fas fa-map-marker-alt mr-1"></i><?= htmlspecialchars($t['cinema_name']) ?>
-                    </span>
-                  <?php endif; ?>
-                </div>
-                <div class="d-flex align-items-center">
-                  <span class="text-muted small mr-2">SL:</span>
-                  <input class="form-control text-center px-1" type="number" name="qty" min="1" value="1" 
-                         style="width:60px; height:34px; border-radius:8px; background:#fff; border:1px solid #ccc; color:#000;" 
-                         aria-label="So ve">
-                  <button class="cart-btn btn-sm ml-2" type="submit" style="padding:6px 14px; font-size:12px; font-weight:600; min-width:80px;">
-                    Đặt vé
-                  </button>
-                </div>
-              </form>
-            <?php endforeach; ?>
+        <!-- Trailer Modal -->
+        <div id="trailerModal" class="trailer-modal d-none">
+          <div class="trailer-modal-overlay"></div>
+          <div class="trailer-modal-content">
+            <button type="button" class="trailer-modal-close">&times;</button>
+            <div class="trailer-video-responsive">
+              <iframe id="trailerIframe" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
           </div>
-        <?php endif; ?>
+        </div>
+
+        <style>
+        .trailer-modal {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 9999;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .trailer-modal-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.85);
+          backdrop-filter: blur(8px);
+        }
+        .trailer-modal-content {
+          position: relative;
+          width: 90%;
+          max-width: 800px;
+          background: #000;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          transform: scale(0.9);
+          transition: transform 0.3s ease;
+          z-index: 10000;
+        }
+        .trailer-modal:not(.d-none) .trailer-modal-content {
+          transform: scale(1);
+        }
+        .trailer-modal-close {
+          position: absolute;
+          top: 10px;
+          right: 15px;
+          background: none;
+          border: none;
+          color: #fff;
+          font-size: 30px;
+          line-height: 1;
+          cursor: pointer;
+          opacity: 0.7;
+          transition: opacity 0.2s;
+          z-index: 10001;
+        }
+        .trailer-modal-close:hover {
+          opacity: 1;
+        }
+        .trailer-video-responsive {
+          position: relative;
+          padding-bottom: 56.25%; /* 16:9 ratio */
+          height: 0;
+          overflow: hidden;
+        }
+        .trailer-video-responsive iframe {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+        }
+        </style>
+
+        <script>
+          (function($) {
+            const showtimesData = <?= json_encode($cinemaGroup, JSON_UNESCAPED_UNICODE) ?>;
+            const $selectCinema = $('#selectCinema');
+            const $selectShowtime = $('#selectShowtime');
+
+            $selectCinema.on('change', function() {
+              const cinemaName = $(this).val();
+              $selectShowtime.empty().append('<option value="">-- Chọn thời gian --</option>');
+              
+              if (!cinemaName || !showtimesData[cinemaName]) {
+                $selectShowtime.prop('disabled', true);
+                return;
+              }
+              
+              const list = showtimesData[cinemaName];
+              list.forEach(function(item) {
+                $selectShowtime.append('<option value="' + item.id + '">' + item.label + '</option>');
+              });
+              $selectShowtime.prop('disabled', false);
+            });
+
+            // Trailer lightbox logic
+            const $modal = $('#trailerModal');
+            const $iframe = $('#trailerIframe');
+            
+            function getYouTubeId(url) {
+              if (!url) return null;
+              const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+              const match = url.match(regExp);
+              return (match && match[2].length === 11) ? match[2] : null;
+            }
+
+            $('.btn-play-trailer').on('click', function(e) {
+              e.preventDefault();
+              const url = $(this).data('trailer-url');
+              const ytId = getYouTubeId(url);
+              if (ytId) {
+                $iframe.attr('src', 'https://www.youtube.com/embed/' + ytId + '?autoplay=1');
+                $modal.removeClass('d-none');
+              } else {
+                alert('Không tìm thấy đường dẫn video trailer hợp lệ!');
+              }
+            });
+
+            $('.trailer-modal-close, .trailer-modal-overlay').on('click', function() {
+              $modal.addClass('d-none');
+              $iframe.attr('src', '');
+            });
+          })(jQuery);
+        </script>
 
         <p class="mt-3"><a href="index.php?act=sanpham">← Quay lại danh sách</a></p>
       </div>

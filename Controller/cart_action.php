@@ -11,8 +11,9 @@ $action = $_GET['action'] ?? '';
 if ($action === 'add') {
   $movie_id = (int)($_POST['movie_id'] ?? 0);
   $qty = max(1, (int)($_POST['qty'] ?? 1));
+  $showtime_id = isset($_POST['showtime_id']) && (int)$_POST['showtime_id'] > 0 ? (int)$_POST['showtime_id'] : null;
   $m = HangHoa::find($movie_id);
-  if ($m) GioHang::add($movie_id, $m['title'], (int)$m['price'], $qty);
+  if ($m) GioHang::add($movie_id, $m['title'], (int)$m['price'], $qty, $showtime_id);
   header('Location: index.php?act=order'); exit;
 }
 if ($action === 'update') {

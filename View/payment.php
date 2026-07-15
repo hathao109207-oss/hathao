@@ -24,68 +24,29 @@ $paySettings = $paySettings ?? [];
      data-base-url="<?= BASE_URL ?>">
 
   <!-- Progress stepper -->
+  <!-- Progress stepper -->
   <div class="payment-stepper">
-    <div class="ps-item active" data-step="1">
+    <div class="ps-item active" data-step="2">
       <div class="ps-dot">1</div>
-      <span>Phương thức</span>
-    </div>
-    <div class="ps-line"></div>
-    <div class="ps-item" data-step="2">
-      <div class="ps-dot">2</div>
-      <span>Ngân hàng</span>
+      <span>Chọn ngân hàng</span>
     </div>
     <div class="ps-line"></div>
     <div class="ps-item" data-step="3">
-      <div class="ps-dot">3</div>
-      <span>Thanh toán</span>
+      <div class="ps-dot">2</div>
+      <span>Quét mã QR</span>
     </div>
     <div class="ps-line"></div>
     <div class="ps-item" data-step="4">
-      <div class="ps-dot">4</div>
-      <span>Xác nhận</span>
+      <div class="ps-dot">3</div>
+      <span>Xác nhận &amp; hoàn tất</span>
     </div>
   </div>
 
   <div class="row">
     <div class="col-lg-8 mb-4">
-      <div class="payment-card payment-glass">
-        <div class="payment-card-head">
-          <h5 class="payment-step-title"><span>1</span> Chọn phương thức thanh toán</h5>
-          <span class="payment-secure-badge"><i class="fas fa-lock"></i> Mã hóa 256-bit</span>
-        </div>
-        <div class="payment-method-grid">
-          <?php if (!empty($paySettings['enable_qr'])): ?>
-          <button type="button" class="payment-method-card" data-method="qr_code">
-            <div class="pm-glow"></div>
-            <div class="pm-icon-wrap"><i class="fas fa-qrcode"></i></div>
-            <div class="pm-title">QR Code</div>
-            <div class="pm-desc">Quét mã bằng app ngân hàng — nhanh &amp; tiện</div>
-            <div class="pm-check"><i class="fas fa-check"></i></div>
-          </button>
-          <?php endif; ?>
-          <?php if (!empty($paySettings['enable_bank_transfer'])): ?>
-          <button type="button" class="payment-method-card" data-method="bank_transfer">
-            <div class="pm-glow"></div>
-            <div class="pm-icon-wrap"><i class="fas fa-university"></i></div>
-            <div class="pm-title">Chuyển khoản</div>
-            <div class="pm-desc">Internet banking hoặc chuyển khoản thủ công</div>
-            <div class="pm-check"><i class="fas fa-check"></i></div>
-          </button>
-          <?php endif; ?>
-          <?php if (!empty($paySettings['enable_credit_card'])): ?>
-          <button type="button" class="payment-method-card" data-method="credit_card">
-            <div class="pm-glow"></div>
-            <div class="pm-icon-wrap"><i class="fas fa-credit-card"></i></div>
-            <div class="pm-title">Thẻ tín dụng</div>
-            <div class="pm-desc">Visa, Mastercard, JCB, thẻ nội địa</div>
-            <div class="pm-check"><i class="fas fa-check"></i></div>
-          </button>
-          <?php endif; ?>
-        </div>
-      </div>
 
-      <div class="payment-card payment-glass payment-step-bank d-none">
-        <h5 class="payment-step-title"><span>2</span> Tìm kiếm &amp; chọn ngân hàng</h5>
+      <div class="payment-card payment-glass payment-step-bank">
+        <h5 class="payment-step-title"><span>1</span> Tìm kiếm &amp; chọn ngân hàng</h5>
         <div class="bank-search-wrap">
           <i class="fas fa-search"></i>
           <input type="text" id="bankSearchInput" class="form-control payment-input" placeholder="Tìm ngân hàng theo tên hoặc mã..." autocomplete="off">
@@ -113,7 +74,7 @@ $paySettings = $paySettings ?? [];
       </div>
 
       <div class="payment-card payment-glass payment-step-details d-none">
-        <h5 class="payment-step-title"><span>3</span> Thông tin thanh toán</h5>
+        <h5 class="payment-step-title"><span>2</span> Thông tin thanh toán</h5>
 
         <div id="panelQr" class="payment-detail-panel d-none">
           <div class="qr-payment-box">
@@ -161,86 +122,15 @@ $paySettings = $paySettings ?? [];
             </div>
           </div>
         </div>
-
-        <div id="panelBank" class="payment-detail-panel d-none">
-          <div class="transfer-info-box">
-            <div class="qr-info-row"><span class="qr-label">Ngân hàng</span><strong id="bankTransferName" class="qr-value">—</strong></div>
-            <div class="qr-info-row">
-              <span class="qr-label">Số tài khoản</span>
-              <span class="qr-value">
-                <strong id="bankAccountNumber">—</strong>
-                <button type="button" class="btn-copy" data-copy-target="bankAccountNumber"><i class="far fa-copy"></i></button>
-              </span>
-            </div>
-            <div class="qr-info-row"><span class="qr-label">Chủ tài khoản</span><strong id="bankAccountHolder" class="qr-value">—</strong></div>
-            <div class="qr-info-row amount-row"><span class="qr-label">Số tiền</span><strong id="bankAmount" class="qr-value text-amount">—</strong></div>
-            <div class="qr-info-row">
-              <span class="qr-label">Nội dung CK</span>
-              <span class="qr-value">
-                <strong id="bankTransferContent">—</strong>
-                <button type="button" class="btn-copy" data-copy-target="bankTransferContent"><i class="far fa-copy"></i></button>
-              </span>
-            </div>
-          </div>
-          <div class="form-group mt-4">
-            <label class="payment-label">Mã giao dịch <span class="text-danger">*</span></label>
-            <input type="text" name="transaction_ref" id="transactionRef" class="form-control payment-input" placeholder="Nhập mã giao dịch từ ngân hàng">
-          </div>
-          <div class="form-group">
-            <label class="payment-label">Ảnh bill chuyển khoản</label>
-            <div class="file-upload-zone" id="proofDropZone">
-              <input type="file" name="payment_proof" id="paymentProof" accept="image/jpeg,image/png,image/gif">
-              <i class="fas fa-cloud-upload-alt"></i>
-              <span>Kéo thả hoặc bấm để chọn ảnh (JPG/PNG, tối đa 5MB)</span>
-            </div>
-            <div id="proofPreview" class="proof-preview d-none"><img src="" alt="Preview"></div>
-          </div>
-        </div>
-
-        <div id="panelCard" class="payment-detail-panel d-none">
-          <div class="credit-card-visual">
-            <div class="cc-chip"></div>
-            <div class="cc-number" id="ccVisualNumber">•••• •••• •••• ••••</div>
-            <div class="cc-bottom">
-              <span id="ccVisualName">TÊN CHỦ THẺ</span>
-              <span id="ccVisualExpiry">MM/YY</span>
-            </div>
-          </div>
-          <div class="credit-card-note mb-3">
-            <i class="fas fa-lock"></i> Thông tin thẻ được mã hóa SSL — chỉ lưu 4 số cuối.
-          </div>
-          <div class="form-group">
-            <label class="payment-label">Ngân hàng phát hành</label>
-            <input type="text" id="cardBankName" class="form-control payment-input" readonly>
-          </div>
-          <div class="form-group">
-            <label class="payment-label">Số thẻ <span class="text-danger">*</span></label>
-            <input type="text" id="cardNumber" class="form-control payment-input" placeholder="1234 5678 9012 3456" maxlength="19" inputmode="numeric">
-          </div>
-          <div class="form-group">
-            <label class="payment-label">Tên chủ thẻ <span class="text-danger">*</span></label>
-            <input type="text" id="cardName" class="form-control payment-input" placeholder="NGUYEN VAN A">
-          </div>
-          <div class="form-row">
-            <div class="col-md-6 form-group">
-              <label class="payment-label">Hết hạn <span class="text-danger">*</span></label>
-              <input type="text" id="cardExpiry" class="form-control payment-input" placeholder="MM/YY" maxlength="5">
-            </div>
-            <div class="col-md-6 form-group">
-              <label class="payment-label">CVV <span class="text-danger">*</span></label>
-              <input type="password" id="cardCvv" class="form-control payment-input" placeholder="•••" maxlength="4">
-            </div>
-          </div>
-        </div>
       </div>
 
       <div class="payment-card payment-glass payment-step-confirm d-none">
-        <h5 class="payment-step-title"><span>4</span> Xác nhận &amp; hoàn tất</h5>
+        <h5 class="payment-step-title"><span>3</span> Xác nhận &amp; hoàn tất</h5>
         <form id="paymentConfirmForm" method="post" enctype="multipart/form-data" action="index.php?act=payment&order_id=<?= (int)$order_id ?>">
           <?= csrf_field() ?>
           <input type="hidden" name="action" value="confirm_payment">
           <input type="hidden" name="order_id" value="<?= (int)$order_id ?>">
-          <input type="hidden" name="payment_method" id="formPaymentMethod" value="">
+          <input type="hidden" name="payment_method" id="formPaymentMethod" value="qr_code">
           <input type="hidden" name="bank_code" id="formBankCode" value="">
           <input type="hidden" name="transaction_ref" id="formTransactionRef" value="">
           <input type="hidden" name="account_holder" id="formAccountHolder" value="">
@@ -248,6 +138,15 @@ $paySettings = $paySettings ?? [];
           <input type="hidden" name="card_name" id="formCardName" value="">
           <input type="hidden" name="card_expiry" id="formCardExpiry" value="">
           <input type="hidden" name="card_cvv" id="formCardCvv" value="">
+          <div class="form-group mb-3">
+            <label class="payment-label">Minh chứng thanh toán (Chụp màn hình bill giao dịch thành công) <span class="text-danger">*</span></label>
+            <div class="file-upload-zone" id="proofDropZone">
+              <input type="file" name="payment_proof" id="paymentProof" accept="image/jpeg,image/png,image/gif" required>
+              <i class="fas fa-cloud-upload-alt"></i>
+              <span>Kéo thả hoặc bấm để chọn ảnh chụp màn hình bill (JPG/PNG, tối đa 5MB)</span>
+            </div>
+            <div id="proofPreview" class="proof-preview d-none"><img src="" alt="Preview"></div>
+          </div>
           <div class="confirm-box">
             <div class="custom-control custom-checkbox">
               <input type="checkbox" class="custom-control-input" id="confirmCheck" name="confirm_check" value="1">

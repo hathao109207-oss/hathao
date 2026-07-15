@@ -6,6 +6,8 @@ require_once __DIR__ . '/../../Model/connect.php';
 $genres = LoaiHang::all();
 $movie = [];
 $mode = 'add';
+$cinemas = $conn->query("SELECT * FROM cinemas ORDER BY name")->fetch_all(MYSQLI_ASSOC);
+$movieShowtimes = [];
 
 if ($_SERVER['REQUEST_METHOD']==='POST') {
   $title = trim($_POST['title'] ?? '');
@@ -32,6 +34,22 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
   $stmt = $conn->prepare("INSERT INTO movies(title,price,poster,description,genre_id,duration_min,rating,trailer_url) VALUES (?,?,?,?,?,?,?,?)");
   $stmt->bind_param("sississs", $title,$price,$posterPath,$description,$genre_id,$duration_min,$rating,$trailer_url);
   $stmt->execute();
+  $new_movie_id = $conn->insert_id;
+
+  // Insert new showtimes
+  if ($new_movie_id > 0 && isset($_POST['showtimes']) && is_array($_POST['showtimes'])) {
+      foreach ($_POST['showtimes'] as $st) {
+          $cinema_id = (int)($st['cinema_id'] ?? 1);
+          $show_date = trim($st['show_date'] ?? '');
+          $show_time = trim($st['show_time'] ?? '');
+          if ($show_date !== '' && $show_time !== '') {
+              $stmtST = $conn->prepare("INSERT INTO showtimes (movie_id, cinema_id, show_date, show_time) VALUES (?, ?, ?, ?)");
+              $stmtST->bind_param("iiss", $new_movie_id, $cinema_id, $show_date, $show_time);
+              $stmtST->execute();
+          }
+      }
+  }
+
   header('Location: index.php?act=movies'); exit;
 }
 
