@@ -61,9 +61,8 @@
   .total-highlight .amount { font-family: 'Poppins',sans-serif; font-size: 22px; font-weight: 800; color: #ff6b35; }
 </style>
 
-<style>
-  /* Order Detail Premium */
-  .order-detail-title {
+<div class="container mt-5 mb-5">
+  <div class="order-detail-title">
     font-family: 'Poppins', sans-serif;
     font-size: 26px;
     font-weight: 800;

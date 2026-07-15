@@ -32,6 +32,7 @@ $baseUrl = rtrim($baseUrl, '/') . '/';
 
 define('BASE_URL', $baseUrl);
 define('ADMIN_URL', BASE_URL . 'Admin/');
+define('ORDER_DETAIL_SECRET', 'CineTicket_Order_Access_2026!');
 
 // Kết nối DB
 define('DB_HOST','localhost');
@@ -40,9 +41,9 @@ define('DB_USER','root');
 define('DB_PASS','');
 
 // Tài khoản thụ hưởng thanh toán (VietQR / chuyển khoản)
-define('PAYMENT_MERCHANT_ACCOUNT', '19036588688016');
-define('PAYMENT_MERCHANT_NAME', 'CINETICKET VIET NAM');
-define('PAYMENT_MERCHANT_BANK', 'TCB');
+define('PAYMENT_MERCHANT_ACCOUNT', '03174033109207');
+define('PAYMENT_MERCHANT_NAME', 'NGUYEN NGOC HA THAO');
+define('PAYMENT_MERCHANT_BANK', 'MB');
 
 // SMTP Email Configuration (thay email/app password thực để gửi mail)
 define('SMTP_HOST', 'smtp.gmail.com');

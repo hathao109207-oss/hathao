@@ -73,6 +73,22 @@ class HoaDon {
         ];
     }
 
+    public static function buildOrderAccessToken($order_id, $customer_email) {
+        $email = strtolower(trim((string)$customer_email));
+        $secret = defined('ORDER_DETAIL_SECRET') ? ORDER_DETAIL_SECRET : 'CineTicket_Order_Access_2026!';
+        return hash_hmac('sha256', (int)$order_id . '|' . $email, $secret);
+    }
+
+    public static function verifyOrderAccessToken($order_id, $customer_email, $token) {
+        if (!is_string($token) || $token === '') {
+            return false;
+        }
+        return hash_equals(
+            self::buildOrderAccessToken($order_id, $customer_email),
+            $token
+        );
+    }
+
     public static function find($order_id){
         global $conn;
         $stmt = $conn->prepare("SELECT * FROM orders WHERE id=?");

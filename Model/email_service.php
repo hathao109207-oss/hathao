@@ -37,7 +37,11 @@ class EmailService {
         $baseUrl = defined('BASE_URL') ? BASE_URL : '/';
         $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
         $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        $accessToken = HoaDon::buildOrderAccessToken($orderId, $order['customer_email'] ?? '');
         $orderUrl = $protocol . '://' . $host . $baseUrl . 'index.php?act=orderdetail&id=' . $orderId;
+        if ($accessToken !== '') {
+            $orderUrl .= '&access=' . urlencode($accessToken);
+        }
         $homeUrl = $protocol . '://' . $host . $baseUrl;
 
         // Get seat info for QR
@@ -242,7 +246,7 @@ class EmailService {
     <!-- CTA Button -->
     <table width="100%" cellpadding="0" cellspacing="0">
     <tr><td style="padding:8px 32px 24px;text-align:center;">
-      <a href="' . $orderUrl . '" style="display:inline-block;background:linear-gradient(135deg,#ff6b35,#f28123);color:#fff;text-decoration:none;padding:14px 40px;border-radius:50px;font-weight:700;font-size:15px;box-shadow:0 8px 24px rgba(255,107,53,0.4);">Xem chi tiết đơn hàng →</a>
+      <a href="' . $orderUrl . '" target="_blank" rel="noopener noreferrer" style="display:inline-block;background:linear-gradient(135deg,#ff6b35,#f28123);color:#fff;text-decoration:none;padding:14px 40px;border-radius:50px;font-weight:700;font-size:15px;box-shadow:0 8px 24px rgba(255,107,53,0.4);">Xem chi tiết đơn hàng →</a>
     </td></tr>
     </table>
 

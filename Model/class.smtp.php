@@ -53,9 +53,11 @@ class SimpleSMTP {
 
         $headers = "From: <$from>\r\n";
         $headers .= "To: <$to>\r\n";
-        $headers .= "Subject: " . $subject . "\r\n";
+        $headers .= "Subject: =?UTF-8?B?" . base64_encode($subject) . "?=\r\n";
         $headers .= "MIME-Version: 1.0\r\n";
         $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+        $headers .= "Content-Transfer-Encoding: 8bit\r\n";
+        $headers .= "X-Mailer: CineTicket Mailer\r\n";
 
         $data = $headers . "\r\n" . $bodyHtml . "\r\n.";
         fwrite($this->sock, $data . "\r\n");

@@ -15,13 +15,14 @@ if (!csrf_verify()) {
 $items = GioHang::items();
 if (!$items) { $_SESSION['flash_error']='Giỏ vé trống.'; header('Location: index.php?act=cart'); exit; }
 
-$name = trim($_POST['name'] ?? '');
-$email = trim($_POST['email'] ?? '');
-$phone = trim($_POST['phone'] ?? '');
+$user = $_SESSION['user'];
+$name = trim($user['name'] ?? '');
+$email = trim($user['email'] ?? '');
+$phone = trim($user['phone'] ?? '');
 $note = trim($_POST['note'] ?? '');
 if ($name===''||$email===''||$phone==='') {
-  $_SESSION['flash_error']='Vui lòng nhập đầy đủ thông tin.';
-  header('Location: index.php?act=order'); exit;
+  $_SESSION['flash_error']='Vui lòng nhập đầy đủ thông tin trong tài khoản trước khi đặt vé.';
+  header('Location: index.php?act=account'); exit;
 }
 
 $total = GioHang::total();

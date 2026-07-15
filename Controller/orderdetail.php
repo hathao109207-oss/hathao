@@ -3,15 +3,28 @@ require_once __DIR__ . '/../Model/hoadon.php';
 require_once __DIR__ . '/../Model/seat.php';
 require_once __DIR__ . '/../Model/showtime.php';
 
-if (empty($_SESSION['user'])) {
-  $_SESSION['flash_error'] = 'Vui long dang nhap.';
-  header('Location: index.php?act=login'); exit;
+$order_id = (int)($_GET['id'] ?? 0);
+$accessToken = trim($_GET['access'] ?? '');
+$order = null;
+
+if (!empty($_SESSION['user'])) {
+  $order = HoaDon::findForUser($order_id, (int)$_SESSION['user']['id']);
 }
 
-$order_id = (int)($_GET['id'] ?? 0);
-$order = HoaDon::findForUser($order_id, (int)$_SESSION['user']['id']);
+if (!$order && $accessToken !== '') {
+  $candidateOrder = HoaDon::find($order_id);
+  if ($candidateOrder && HoaDon::verifyOrderAccessToken($order_id, $candidateOrder['customer_email'] ?? '', $accessToken)) {
+    $order = $candidateOrder;
+  }
+}
+
 if (!$order) {
-  $_SESSION['flash_error'] = 'Khong thay don.';
+  if (empty($_SESSION['user'])) {
+    $_SESSION['flash_error'] = 'Vui lòng đăng nhập để xem đơn hàng.';
+    header('Location: index.php?act=login'); exit;
+  }
+
+  $_SESSION['flash_error'] = 'Không thấy đơn.';
   header('Location: index.php?act=myorders'); exit;
 }
 

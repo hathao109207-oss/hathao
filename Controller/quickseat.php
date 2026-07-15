@@ -33,6 +33,7 @@ if ($qty > $available) {
   header('Location: index.php?act=sanpham'); exit;
 }
 
+// Use account info to ensure emails go to the user's registered address
 $user = $_SESSION['user'];
 $name = trim($user['name'] ?? '');
 $email = trim($user['email'] ?? '');
