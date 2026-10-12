@@ -1,1 +1,0 @@
-<?php // Banner placeholder removed ?>
