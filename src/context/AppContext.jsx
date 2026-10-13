@@ -10,10 +10,23 @@ export const AppProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : defaultUsers;
   });
 
-  // User state
+  // Quản lý phiên đăng nhập:
+  // Mặc định luôn là null (khách vãng lai, chưa đăng nhập bất kỳ tài khoản nào).
+  // Sử dụng sessionStorage để duy trì phiên làm việc trong tab hiện tại khi người dùng chủ động đăng nhập.
+  // Đồng thời dọn dẹp 'cineticket_user' trong localStorage cũ nếu còn sót lại từ các lần test trước.
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('cineticket_user');
-    return saved ? JSON.parse(saved) : null;
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.removeItem('cineticket_user');
+      }
+      if (typeof window !== 'undefined' && window.sessionStorage) {
+        const saved = sessionStorage.getItem('cineticket_user');
+        return saved ? JSON.parse(saved) : null;
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
   });
 
   // Movies state (supports admin add/delete/update)
@@ -128,10 +141,19 @@ export const AppProvider = ({ children }) => {
   }, [usersList]);
 
   useEffect(() => {
-    if (user) {
-      localStorage.setItem('cineticket_user', JSON.stringify(user));
-    } else {
-      localStorage.removeItem('cineticket_user');
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.removeItem('cineticket_user');
+      }
+      if (typeof window !== 'undefined' && window.sessionStorage) {
+        if (user) {
+          sessionStorage.setItem('cineticket_user', JSON.stringify(user));
+        } else {
+          sessionStorage.removeItem('cineticket_user');
+        }
+      }
+    } catch (e) {
+      // ignore storage errors
     }
   }, [user]);
 
@@ -448,6 +470,14 @@ export const AppProvider = ({ children }) => {
 
   const logoutUser = () => {
     setUser(null);
+    try {
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('cineticket_user');
+        localStorage.removeItem('cineticket_user');
+      }
+    } catch (e) {
+      // ignore
+    }
     addToast('Bạn đã đăng xuất tài khoản.', 'info');
   };
 

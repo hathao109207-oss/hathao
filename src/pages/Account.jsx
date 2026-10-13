@@ -5,10 +5,19 @@ import { useApp } from '../context/AppContext';
 const Account = () => {
   const { user, updateUserProfile, updateUserPassword, addToast } = useApp();
 
-  const [fullname, setFullname] = useState(user?.fullname || user?.username || 'Nguyễn Ngọc Hà Thảo');
-  const [username, setUsername] = useState(user?.username || 'hathao');
-  const [email, setEmail] = useState(user?.email || 'hathao@cineticket.vn');
-  const [phone, setPhone] = useState('0909123456');
+  const [fullname, setFullname] = useState(user?.fullname || user?.username || '');
+  const [username, setUsername] = useState(user?.username || '');
+  const [email, setEmail] = useState(user?.email || '');
+  const [phone, setPhone] = useState(user?.phone || '');
+
+  React.useEffect(() => {
+    if (user) {
+      setFullname(user.fullname || user.username || '');
+      setUsername(user.username || '');
+      setEmail(user.email || '');
+      setPhone(user.phone || '');
+    }
+  }, [user]);
 
   const [currentPw, setCurrentPw] = useState('');
   const [newPw, setNewPw] = useState('');

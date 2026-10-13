@@ -16,9 +16,17 @@ const Payment = () => {
   const grandTotal = seatsTotal + snacksTotal;
 
   // Contact Info
-  const [customerName, setCustomerName] = useState(user?.fullname || user?.username || 'Nguyễn Hà Thảo');
-  const [customerEmail, setCustomerEmail] = useState(user?.email || 'hathao@cineticket.vn');
-  const [customerPhone, setCustomerPhone] = useState('0909123456');
+  const [customerName, setCustomerName] = useState(user?.fullname || user?.username || '');
+  const [customerEmail, setCustomerEmail] = useState(user?.email || '');
+  const [customerPhone, setCustomerPhone] = useState(user?.phone || '');
+
+  React.useEffect(() => {
+    if (user) {
+      if (user.fullname || user.username) setCustomerName(user.fullname || user.username);
+      if (user.email) setCustomerEmail(user.email);
+      if (user.phone) setCustomerPhone(user.phone);
+    }
+  }, [user]);
 
   // Payment Options
   const [paymentMethod, setPaymentMethod] = useState('bank_qr');

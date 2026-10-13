@@ -3,8 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 
 const Login = () => {
-  const [username, setUsername] = useState('HaThao VIP');
-  const [password, setPassword] = useState('123456');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const { loginUser } = useApp();
   const navigate = useNavigate();
 
