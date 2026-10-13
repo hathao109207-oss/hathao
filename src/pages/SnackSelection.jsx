@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { snacks, movies } from '../data/mockData';
+import { snacks } from '../data/mockData';
 import { useApp } from '../context/AppContext';
 
 const SnackSelection = () => {
   const navigate = useNavigate();
-  const { currentBooking, updateBooking } = useApp();
+  const { currentBooking, updateBooking, movieList } = useApp();
 
-  const movie = movies.find(m => m.id === currentBooking.movieId) || movies[0];
+  const movie = movieList.find(m => m.id === currentBooking.movieId) || movieList[0];
   const seatPrice = movie.price || 100000;
   const seatsTotal = (currentBooking.seats?.length || 1) * seatPrice;
 

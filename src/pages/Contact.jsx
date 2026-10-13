@@ -45,9 +45,9 @@ const Contact = () => {
               </p>
 
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '14px', color: 'rgba(255,255,255,0.85)', fontSize: '14.5px' }}>
-                <li><i className="fas fa-phone-alt" style={{ color: '#d4af37', width: '24px' }}></i> <strong>Hotline VIP:</strong> 1900 8888</li>
-                <li><i className="fas fa-envelope" style={{ color: '#d4af37', width: '24px' }}></i> <strong>Email:</strong> support@cineticket.vn</li>
-                <li><i className="fas fa-map-marker-alt" style={{ color: '#d4af37', width: '24px' }}></i> <strong>Trụ sở:</strong> Tầng 5, Landmark 81, P. 22, Bình Thạnh, TP.HCM</li>
+                <li><i className="fas fa-phone-alt" style={{ color: '#d4af37', width: '24px' }}></i> <strong>Hotline VIP:</strong> <a href="tel:0337191740" style={{ color: '#f3cf7a', textDecoration: 'none', fontWeight: 700 }}>0337191740</a></li>
+                <li><i className="fas fa-envelope" style={{ color: '#d4af37', width: '24px' }}></i> <strong>Email:</strong> <a href="mailto:hthaongn@gmail.com" style={{ color: '#f3cf7a', textDecoration: 'none' }}>hthaongn@gmail.com</a></li>
+                <li><i className="fas fa-map-marker-alt" style={{ color: '#d4af37', width: '24px' }}></i> <strong>Trụ sở:</strong> 12 Trịnh Đình Thảo, Tân Phú, TP.HCM</li>
                 <li><i className="fas fa-clock" style={{ color: '#d4af37', width: '24px' }}></i> <strong>Giờ mở cửa:</strong> 08:00 - 02:00 sáng hàng ngày</li>
               </ul>
 
@@ -56,7 +56,7 @@ const Contact = () => {
                 <div style={{ borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(212, 175, 55, 0.3)' }}>
                   <iframe
                     title="CineTicket Office Map"
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.479220665372!2d106.70098137506127!3d10.774958259258225!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f3f41000001%3A0x6b3afc5c1fa2b43b!2zMTIzIMSQxrDhu51uZyDEkcOtbiBBbmgsIFF14bqtbiAxLCBRdeG6rW4gMSwgUXXhuq1uIDEsIFRow6BuaCBwaOG7kSBI4buTIENow60gTWluaCA3MDAwMCwgVmnhu4d0IE5hbQ!5e0!3m2!1svi!2s!4v1737268800000"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.494747535565!2d106.63462967506126!3d10.77335755928038!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752ea168a65c0b%3A0x2a443e42f5f11663!2zMTIgVHLhu4tuaCDEkMOsbmggVGjhuqNvLCBIb8OgIFRo4bqhbmgsIFTDom4gUGjDuiwgSOG7kyBDaMOtIE1pbmgsIFZp4buHdCBOYW0!5e0!3m2!1svi!2s!4v1737268800000"
                     width="100%"
                     height="220"
                     style={{ border: 0 }}

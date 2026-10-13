@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { movies as initialMovies, showtimes, snacks, defaultUsers, genres as initialGenres } from '../data/mockData';
+import { movies as initialMovies, showtimes, defaultUsers, genres as initialGenres, cinemas, samplePaymentProof, defaultAdminPaymentSettings } from '../data/mockData';
 
 const AppContext = createContext();
 
@@ -31,10 +31,22 @@ export const AppProvider = ({ children }) => {
   // Active booking process (movie, showtime, seats, snacks)
   const [currentBooking, setCurrentBooking] = useState(() => {
     const saved = localStorage.getItem('cineticket_current_booking');
-    return saved ? JSON.parse(saved) : {
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return {
+          ...parsed,
+          seats: [] // Tắt tự động chọn sẵn ghế
+        };
+      } catch (e) {
+        // ignore
+      }
+    }
+    return {
       movieId: 1,
       showtimeId: 101,
-      seats: ['D5', 'D6'],
+      cinemaName: "CineTicket Quận 1 VIP",
+      seats: [],
       snacks: []
     };
   });
@@ -47,16 +59,41 @@ export const AppProvider = ({ children }) => {
         id: 99120,
         movie_id: 1,
         movie_title: "Avatar 2 - Dòng Chảy Của Nước",
+        movie_image: "/assets/img/products/avatar-2.jpg",
         cinema_name: "CineTicket Quận 1 VIP",
         room: "Phòng VIP 01 - Laser IMAX",
-        show_date: "2026-10-12",
+        show_date: "2026-10-13",
         show_time: "14:30",
         seats: ["D5", "D6"],
         snacks: [{ id: 1, name: "Combo Solo VIP", qty: 1, price: 85000 }],
         total: 305000,
         status: "Đã thanh toán",
-        payment_method: "MB Bank QR Code",
+        payment_method: "MB Bank VietQR",
+        payment_proof: samplePaymentProof,
+        customer_name: "Nguyễn Ngọc Hà Thảo",
+        customer_email: "hathao@cineticket.vn",
+        customer_phone: "0909123456",
         created_at: "2026-10-12 11:20:00"
+      },
+      {
+        id: 99121,
+        movie_id: 2,
+        movie_title: "John Wick: Chapter 4",
+        movie_image: "/assets/img/products/john-wick-4.jpg",
+        cinema_name: "CineTicket Landmark 81",
+        room: "Phòng VIP Gold Class",
+        show_date: "2026-10-13",
+        show_time: "19:15",
+        seats: ["F4", "F5"],
+        snacks: [{ id: 2, name: "Combo Couple Sweet", qty: 1, price: 135000 }],
+        total: 345000,
+        status: "Chờ xác nhận",
+        payment_method: "Vietcombank QR",
+        payment_proof: samplePaymentProof,
+        customer_name: "Minh Khoa",
+        customer_email: "khoa@cineticket.vn",
+        customer_phone: "0912345678",
+        created_at: "2026-10-13 08:00:00"
       }
     ];
   });
@@ -75,6 +112,12 @@ export const AppProvider = ({ children }) => {
   const [genreList, setGenreList] = useState(() => {
     const saved = localStorage.getItem('cineticket_genres');
     return saved ? JSON.parse(saved) : initialGenres;
+  });
+
+  // Admin Payment & QR Code Settings
+  const [adminPaymentSettings, setAdminPaymentSettings] = useState(() => {
+    const saved = localStorage.getItem('cineticket_admin_payment');
+    return saved ? JSON.parse(saved) : defaultAdminPaymentSettings;
   });
 
   // Toasts
@@ -115,6 +158,10 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem('cineticket_genres', JSON.stringify(genreList));
   }, [genreList]);
+
+  useEffect(() => {
+    localStorage.setItem('cineticket_admin_payment', JSON.stringify(adminPaymentSettings));
+  }, [adminPaymentSettings]);
 
   const addToast = (msg, type = 'success') => {
     const id = Date.now() + Math.random();
@@ -170,28 +217,37 @@ export const AppProvider = ({ children }) => {
     
     const seatPrice = movie.price || 100000;
     const seatTotal = (currentBooking.seats.length || 1) * seatPrice;
-    const snackTotal = currentBooking.snacks.reduce((sum, s) => sum + (s.price * s.qty), 0);
-    const finalTotal = seatTotal + snackTotal;
+    const snackTotal = (currentBooking.snacks || []).reduce((sum, s) => sum + (s.price * s.qty), 0);
+    const subTotal = seatTotal + snackTotal;
+    const discountVal = paymentData?.discount || 0;
+    const finalTotal = Math.max(0, (paymentData?.finalTotal !== undefined ? paymentData.finalTotal : subTotal - discountVal));
 
     const newOrder = {
       id: Math.floor(10000 + Math.random() * 90000),
       movie_id: movie.id,
       movie_title: movie.title,
-      cinema_name: showtime.cinema_name,
+      movie_image: movie.image,
+      cinema_name: currentBooking.cinemaName || showtime.cinema_name,
       room: showtime.room,
       show_date: showtime.show_date,
       show_time: showtime.show_time,
-      seats: currentBooking.seats.length ? currentBooking.seats : ['E5'],
+      seats: currentBooking.seats && currentBooking.seats.length ? currentBooking.seats : [],
       snacks: currentBooking.snacks || [],
+      subtotal: subTotal,
+      discount: discountVal,
       total: finalTotal,
-      status: "Đã thanh toán",
+      status: paymentData?.status || (paymentData?.payment_proof ? "Chờ xác nhận" : "Đã thanh toán"),
       payment_method: paymentData?.methodName || "Ngân hàng QR Code",
+      payment_proof: paymentData?.payment_proof || null,
+      customer_name: paymentData?.customer_name || user?.fullname || user?.username || "Khách Hàng VIP",
+      customer_email: paymentData?.customer_email || user?.email || "khachhang@cineticket.vn",
+      customer_phone: paymentData?.customer_phone || "0909123456",
       created_at: new Date().toLocaleString('vi-VN')
     };
 
     setOrders(prev => [newOrder, ...prev]);
     clearCart();
-    addToast('Thanh toán thành công! Vé VIP của bạn đã được khởi tạo.', 'success');
+    addToast('Đặt vé thành công! Mã vé VIP của bạn: #' + newOrder.id, 'success');
     return newOrder;
   };
 
@@ -201,7 +257,7 @@ export const AppProvider = ({ children }) => {
       ...newMovie,
       id: Date.now(),
       image: newMovie.image || '/assets/img/products/product-img-1.jpg',
-      rating: newMovie.rating || 8.0,
+      rating: Number(newMovie.rating) || 8.0,
       format: newMovie.format || '2D Digital'
     };
     setMovieList(prev => [movieWithId, ...prev]);
@@ -219,29 +275,32 @@ export const AppProvider = ({ children }) => {
     addToast('Đã cập nhật thông tin phim!', 'success');
   };
 
-  // Update Order Status (Admin)
+  // Order Operations
   const updateOrderStatus = (orderId, newStatus) => {
     setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
-    addToast(`Đã cập nhật trạng thái đơn #${orderId}!`, 'success');
+    addToast(`Đã cập nhật trạng thái đơn #${orderId}: ${newStatus}!`, 'success');
+  };
+
+  const deleteOrder = (orderId) => {
+    setOrders(prev => prev.filter(o => o.id !== orderId));
+    addToast(`Đã xóa đơn hàng #${orderId}.`, 'info');
   };
 
   // Reviews Management
   const addReview = (movieId, rating, comment) => {
-    if (!user) {
-      addToast('Vui lòng đăng nhập để bình luận!', 'error');
-      return;
-    }
+    const reviewerName = user ? (user.fullname || user.username) : 'Khán Giả Ẩn Danh';
     const newReview = {
       id: Date.now(),
       movie_id: movieId,
-      user: user.fullname || user.username,
-      rating,
+      user: reviewerName,
+      rating: Number(rating),
       comment,
       created_at: new Date().toLocaleString('vi-VN'),
       approved: true
     };
     setReviews(prev => [newReview, ...prev]);
     addToast('Đã gửi đánh giá phim thành công!', 'success');
+    return newReview;
   };
 
   const deleteReview = (reviewId) => {
@@ -251,6 +310,7 @@ export const AppProvider = ({ children }) => {
 
   const toggleReviewApproval = (reviewId) => {
     setReviews(prev => prev.map(r => r.id === reviewId ? { ...r, approved: !r.approved } : r));
+    addToast('Đã cập nhật trạng thái hiển thị bình luận!', 'info');
   };
 
   // Genre Management (Admin)
@@ -260,9 +320,80 @@ export const AppProvider = ({ children }) => {
     addToast(`Đã thêm thể loại "${name}"!`, 'success');
   };
 
+  const updateGenre = (id, newName) => {
+    setGenreList(prev => prev.map(g => g.id === id ? { ...g, name: newName.trim() } : g));
+    addToast('Đã cập nhật tên thể loại!', 'success');
+  };
+
   const deleteGenre = (id) => {
     setGenreList(prev => prev.filter(g => g.id !== id));
     addToast('Đã xóa thể loại.', 'info');
+  };
+
+  // User Management
+  const updateUserProfile = (userId, profileData) => {
+    setUsersList(prev => prev.map(u => (u.id === userId || u.username === profileData.username) ? { ...u, ...profileData } : u));
+    if (user && (user.id === userId || user.username === profileData.username)) {
+      setUser(prev => ({ ...prev, ...profileData }));
+    }
+    addToast('Đã cập nhật thông tin tài khoản thành công!', 'success');
+  };
+
+  const updateUserPassword = (emailOrUsername, newPassword) => {
+    const q = emailOrUsername.trim().toLowerCase();
+    setUsersList(prev => prev.map(u => {
+      if (u.email?.toLowerCase() === q || u.username?.toLowerCase() === q) {
+        return { ...u, password: newPassword };
+      }
+      return u;
+    }));
+    if (user && (user.email?.toLowerCase() === q || user.username?.toLowerCase() === q)) {
+      setUser(prev => ({ ...prev, password: newPassword }));
+    }
+    addToast('Đặt lại mật khẩu thành công!', 'success');
+    return true;
+  };
+
+  const addUser = (userData) => {
+    const newUser = {
+      id: Date.now(),
+      username: userData.username.trim(),
+      password: userData.password || '123456',
+      fullname: userData.fullname || userData.username,
+      email: userData.email || `${userData.username.trim()}@cineticket.vn`,
+      role: userData.role || 'member'
+    };
+    setUsersList(prev => [...prev, newUser]);
+    addToast(`Đã tạo tài khoản thành viên "${newUser.username}"!`, 'success');
+    return newUser;
+  };
+
+  const deleteUser = (userId) => {
+    if (user && user.id === userId) {
+      addToast('Không thể xóa tài khoản đang đăng nhập!', 'error');
+      return;
+    }
+    setUsersList(prev => prev.filter(u => u.id !== userId));
+    addToast('Đã xóa người dùng khỏi hệ thống.', 'info');
+  };
+
+  const updateUserRole = (userId, newRole) => {
+    setUsersList(prev => prev.map(u => u.id === userId ? { ...u, role: newRole } : u));
+    if (user && user.id === userId) {
+      setUser(prev => ({ ...prev, role: newRole }));
+    }
+    addToast(`Đã thay đổi quyền thành ${newRole === 'admin' ? 'Quản Trị Viên' : 'Thành Viên'}!`, 'success');
+  };
+
+  // Admin Payment Settings
+  const updateAdminPaymentSettings = (newSettings) => {
+    setAdminPaymentSettings(prev => ({ ...prev, ...newSettings }));
+    addToast('Đã lưu cấu hình mã QR thanh toán của Admin thành công!', 'success');
+  };
+
+  const resetAdminPaymentSettings = () => {
+    setAdminPaymentSettings(defaultAdminPaymentSettings);
+    addToast('Đã khôi phục cấu hình mã QR Admin về mặc định!', 'info');
   };
 
   // Auth operations
@@ -289,6 +420,7 @@ export const AppProvider = ({ children }) => {
         username: username.trim(),
         fullname: username.trim(),
         email: `${username.trim().toLowerCase()}@cineticket.vn`,
+        password: password || '123456',
         role: isAd ? 'admin' : 'member'
       };
       setUsersList(prev => [...prev, newUser]);
@@ -328,6 +460,11 @@ export const AppProvider = ({ children }) => {
         loginUser,
         registerUser,
         logoutUser,
+        updateUserProfile,
+        updateUserPassword,
+        addUser,
+        deleteUser,
+        updateUserRole,
         movieList,
         addMovie,
         deleteMovie,
@@ -342,16 +479,22 @@ export const AppProvider = ({ children }) => {
         orders,
         placeOrder,
         updateOrderStatus,
+        deleteOrder,
         reviews,
         addReview,
         deleteReview,
         toggleReviewApproval,
         genreList,
         addGenre,
+        updateGenre,
         deleteGenre,
+        cinemas,
         toasts,
         addToast,
-        removeToast
+        removeToast,
+        adminPaymentSettings,
+        updateAdminPaymentSettings,
+        resetAdminPaymentSettings
       }}
     >
       {children}

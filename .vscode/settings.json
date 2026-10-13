@@ -1,3 +1,20 @@
 {
-    "git.ignoreLimitWarning": true
+    "git.ignoreLimitWarning": true,
+    "editor.allowVariableFontsInAccessibilityMode": true,
+    "editor.autoClosingBrackets": "always",
+    "editor.autoClosingComments": "always",
+    "editor.autoClosingQuotes": "always",
+    "editor.autoIndentOnPaste": true,
+    "editor.columnSelection": true,
+    "editor.definitionLinkOpensInPeek": true,
+    "editor.experimental.asyncTokenizationLogging": true,
+    "editor.experimental.asyncTokenizationVerification": true,
+    "editor.experimental.preferTreeSitter.css": true,
+    "editor.experimental.preferTreeSitter.ini": true,
+    "editor.experimental.preferTreeSitter.regex": true,
+    "editor.experimental.preferTreeSitter.typescript": true,
+    "editor.experimental.treeSitterTelemetry": true,
+    "editor.inlayHints.enabled": "offUnlessPressed",
+    "files.autoSaveWhenNoErrors": true,
+    "files.autoSaveWorkspaceFilesOnly": true
 }

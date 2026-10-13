@@ -9,15 +9,15 @@ const Footer = () => {
           <div className="row">
             <div className="col-lg-4 col-md-6 mb-4 mb-lg-0">
               <div className="footer-brand">
-                <div className="site-logo mb-3">
-                  <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
-                    <img src="/assets/img/logo.png" alt="CineTicket Logo" style={{ maxHeight: '42px' }} onError={(e) => { e.target.style.display = 'none'; }} />
+                <div className="footer-logo mb-3">
+                  <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
+                    <i className="fas fa-film" style={{ fontSize: '26px', color: '#f3cf7a', filter: 'drop-shadow(0 2px 8px rgba(212, 175, 55, 0.4))' }}></i>
                     <span className="site-logo-text" style={{ fontSize: '22px' }}>CINETICKET <span className="vip-tag-nav">VIP</span></span>
                   </Link>
                 </div>
-                <div className="footer-kicker">Hệ Thống Rạp Chiếu Phim 5 Sao</div>
+                <div className="footer-kicker">Hệ Thống Rạp Chiếu Phim Thế Hệ Mới</div>
                 <p className="footer-summary">
-                  CineTicket mang đến cho quý khách trải nghiệm điện ảnh thượng lưu với âm thanh Dolby Atmos đa chiều, màn hình 4K Laser cực đại và ghế da bọc VIP cùng thực đơn ẩm thực tinh tế.
+                  CineTicket mang đến cho quý khách trải nghiệm điện ảnh thượng lưu với âm thanh Dolby Atmos đa chiều, màn hình 4K Laser cực đại.
                 </p>
                 <div className="footer-cta-group">
                   <Link to="/movies" className="footer-cta-primary">
@@ -43,9 +43,9 @@ const Footer = () => {
             <div className="col-lg-3 col-md-6 mb-4 mb-md-0">
               <h4 style={{ color: '#f3cf7a', fontSize: '16px', fontWeight: 800, marginBottom: '20px', textTransform: 'uppercase' }}>Hỗ Trợ &amp; Dịch Vụ</h4>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px', color: 'rgba(255,255,255,0.7)', fontSize: '14px' }}>
-                <li><i className="fas fa-map-marker-alt" style={{ color: '#d4af37', width: '20px' }}></i> Landmark 81, P. 22, Bình Thạnh, TP.HCM</li>
-                <li><i className="fas fa-phone-alt" style={{ color: '#d4af37', width: '20px' }}></i> Hotline VIP: 1900 8888 (24/7)</li>
-                <li><i className="fas fa-envelope" style={{ color: '#d4af37', width: '20px' }}></i> contact@cineticket.vn</li>
+                <li><i className="fas fa-map-marker-alt" style={{ color: '#d4af37', width: '20px' }}></i> 12 Trịnh Đình Thảo, Tân Phú, TP.HCM</li>
+                <li><i className="fas fa-phone-alt" style={{ color: '#d4af37', width: '20px' }}></i> Hotline: <a href="tel:0337191740" style={{ color: 'inherit', textDecoration: 'none' }}>0337191740 (24/7)</a></li>
+                <li><i className="fas fa-envelope" style={{ color: '#d4af37', width: '20px' }}></i> <a href="mailto:hthaongn@gmail.com" style={{ color: 'inherit', textDecoration: 'none' }}>hthaongn@gmail.com</a></li>
                 <li><i className="fas fa-clock" style={{ color: '#d4af37', width: '20px' }}></i> Giờ mở cửa: 08:00 - 02:00 sáng</li>
               </ul>
             </div>
@@ -86,7 +86,7 @@ const Footer = () => {
           </div>
 
           <div style={{ borderTop: '1px solid rgba(212, 175, 55, 0.15)', marginTop: '40px', paddingTop: '20px', textAlign: 'center', color: 'rgba(255,255,255,0.5)', fontSize: '13px' }}>
-            © 2026 CineTicket VIP Cinema. All rights reserved. Chuyển đổi công nghệ React Front-End hoàn chỉnh.
+            © 2026 CineTicket Cinema. All rights reserved. Hệ Thống Rạp Chiếu Phim Thế Hệ Mới.
           </div>
         </div>
       </div>

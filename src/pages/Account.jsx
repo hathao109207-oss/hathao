@@ -1,30 +1,73 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 
 const Account = () => {
-  const { user, setUser, addToast } = useApp();
-  const [username, setUsername] = useState(user?.username || 'HaThao VIP');
-  const [email, setEmail] = useState(user?.email || 'hathao@example.com');
+  const { user, updateUserProfile, updateUserPassword, addToast } = useApp();
+
+  const [fullname, setFullname] = useState(user?.fullname || user?.username || 'Nguyễn Ngọc Hà Thảo');
+  const [username, setUsername] = useState(user?.username || 'hathao');
+  const [email, setEmail] = useState(user?.email || 'hathao@cineticket.vn');
   const [phone, setPhone] = useState('0909123456');
 
   const [currentPw, setCurrentPw] = useState('');
   const [newPw, setNewPw] = useState('');
+  const [confirmPw, setConfirmPw] = useState('');
+
+  if (!user) {
+    return (
+      <div className="container mt-5 mb-5 text-center" style={{ minHeight: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ background: 'rgba(18, 20, 32, 0.92)', border: '1px solid rgba(212, 175, 55, 0.3)', borderRadius: '20px', padding: '40px', maxWidth: '480px' }}>
+          <i className="fas fa-user-lock" style={{ fontSize: '48px', color: '#f3cf7a', marginBottom: '16px' }}></i>
+          <h2 style={{ color: '#fff', fontSize: '22px', fontWeight: 800 }}>Vui Lòng Đăng Nhập</h2>
+          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '14px', marginBottom: '24px' }}>
+            Bạn cần đăng nhập tài khoản để quản lý thông tin thành viên và đổi mật khẩu.
+          </p>
+          <Link to="/login" className="boxed-btn" style={{ background: 'linear-gradient(135deg, #f3cf7a, #d4af37)', color: '#090a0f', padding: '12px 30px', borderRadius: '50px', fontWeight: 800, textDecoration: 'none' }}>
+            Đăng Nhập Ngay
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const handleUpdateProfile = (e) => {
     e.preventDefault();
-    setUser({ ...user, username, email });
-    addToast('Cập nhật thông tin tài khoản thành công!', 'success');
+    if (!fullname.trim() || !email.trim()) {
+      addToast('Vui lòng điền đầy đủ họ tên và email!', 'error');
+      return;
+    }
+    updateUserProfile(user.id, {
+      fullname: fullname.trim(),
+      username: username.trim(),
+      email: email.trim(),
+      phone: phone.trim()
+    });
   };
 
   const handleChangePassword = (e) => {
     e.preventDefault();
-    if (!currentPw || !newPw) {
-      addToast('Vui lòng nhập đầy đủ mật khẩu!', 'error');
+    if (!currentPw || !newPw || !confirmPw) {
+      addToast('Vui lòng điền đầy đủ các trường mật khẩu!', 'error');
       return;
     }
+    if (user.password && currentPw !== user.password) {
+      addToast('Mật khẩu hiện tại không chính xác!', 'error');
+      return;
+    }
+    if (newPw.length < 6) {
+      addToast('Mật khẩu mới phải có ít nhất 6 ký tự!', 'error');
+      return;
+    }
+    if (newPw !== confirmPw) {
+      addToast('Mật khẩu mới và xác nhận mật khẩu không khớp!', 'error');
+      return;
+    }
+
+    updateUserPassword(user.email, newPw);
     setCurrentPw('');
     setNewPw('');
-    addToast('Đổi mật khẩu thành công!', 'success');
+    setConfirmPw('');
   };
 
   return (
@@ -34,7 +77,7 @@ const Account = () => {
           <p style={{ color: '#f3cf7a', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '6px' }}>
             <i className="fas fa-user-cog mr-2"></i> Hồ Sơ Thành Viên
           </p>
-          <h1 className="catalog-title">QUẢN LÝ TÀI KHOẢN VIP</h1>
+          <h1 className="catalog-title">QUẢN LÝ TÀI KHOẢN &amp; MẬT KHẨU</h1>
         </div>
       </div>
 
@@ -51,12 +94,12 @@ const Account = () => {
               boxShadow: '0 20px 45px rgba(0,0,0,0.7)'
             }}>
               <div style={{
-                width: '80px',
-                height: '80px',
+                width: '84px',
+                height: '84px',
                 borderRadius: '50%',
                 background: 'linear-gradient(135deg, #f3cf7a, #d4af37)',
                 color: '#090a0f',
-                fontSize: '36px',
+                fontSize: '38px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -67,41 +110,61 @@ const Account = () => {
               </div>
 
               <h3 style={{ fontFamily: "'Outfit', sans-serif", color: '#fff', fontSize: '22px', fontWeight: 800, margin: '0 0 4px' }}>
-                {user?.username || 'Khách Hàng'}
+                {fullname}
               </h3>
-              <div style={{ color: '#f3cf7a', fontSize: '13px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '16px' }}>
-                HẠNG GOLD VIP
+              <div style={{ color: '#f3cf7a', fontSize: '12.5px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '16px' }}>
+                {user.role === 'admin' ? '⚡ QUẢN TRỊ VIÊN HỆ THỐNG' : '★ THÀNH VIÊN GOLD VIP'}
               </div>
 
-              <div style={{ background: 'rgba(9, 10, 15, 0.6)', border: '1px solid rgba(212, 175, 55, 0.2)', borderRadius: '12px', padding: '14px', marginBottom: '16px' }}>
-                <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>Điểm thưởng tích lũy (CinePoints):</div>
-                <div style={{ color: '#f3cf7a', fontSize: '24px', fontWeight: 900 }}>1,250 PTS</div>
+              <div style={{ background: 'rgba(9, 10, 15, 0.6)', border: '1px solid rgba(212, 175, 55, 0.2)', borderRadius: '12px', padding: '14px', marginBottom: '16px', textAlign: 'left' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                  <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>Tên đăng nhập:</span>
+                  <strong style={{ color: '#fff', fontSize: '13px' }}>{user.username}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                  <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>CinePoints:</span>
+                  <strong style={{ color: '#f3cf7a', fontSize: '15px' }}>1,850 PTS</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>Đặc quyền:</span>
+                  <span style={{ color: '#10b981', fontWeight: 700, fontSize: '12px' }}>Giảm 10% vé + Free Bắp</span>
+                </div>
               </div>
 
-              <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', margin: 0 }}>
-                Bạn đang được giảm 10% cho mọi suất chiếu và miễn phí nâng cỡ bắp nước.
-              </p>
+              <Link to="/myorders" className="bordered-btn" style={{ width: '100%', padding: '10px', borderRadius: '10px', fontSize: '13px', display: 'block', textDecoration: 'none' }}>
+                <i className="fas fa-ticket-alt mr-2"></i> Xem Vé Đã Đặt Của Tôi
+              </Link>
             </div>
           </div>
 
-          {/* Account Edit Form */}
+          {/* Account Edit & Password Forms */}
           <div className="col-lg-8">
+            {/* Form 1: Profile update */}
             <div style={{
-              background: 'rgba(18, 20, 29, 0.85)',
-              border: '1px solid rgba(212, 175, 55, 0.22)',
+              background: 'rgba(18, 20, 29, 0.92)',
+              border: '1px solid rgba(212, 175, 55, 0.25)',
               borderRadius: '20px',
               padding: '30px',
               boxShadow: '0 15px 45px rgba(0,0,0,0.6)',
               marginBottom: '30px'
             }}>
-              <h3 style={{ fontFamily: "'Outfit', sans-serif", color: '#fff', fontSize: '20px', fontWeight: 800, marginBottom: '20px' }}>
-                Thông Tin Cá Nhân
+              <h3 style={{ fontFamily: "'Outfit', sans-serif", color: '#fff', fontSize: '20px', fontWeight: 800, marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <i className="fas fa-id-card" style={{ color: '#f3cf7a' }}></i> Cập Nhật Thông Tin Cá Nhân
               </h3>
 
               <form onSubmit={handleUpdateProfile}>
                 <div className="row">
                   <div className="col-md-6 mb-3">
-                    <label style={{ color: '#f3cf7a', fontSize: '13px', fontWeight: 700, display: 'block', marginBottom: '6px' }}>Tên người dùng</label>
+                    <label style={{ color: '#f3cf7a', fontSize: '13px', fontWeight: 700, display: 'block', marginBottom: '6px' }}>Họ và tên</label>
+                    <input
+                      type="text"
+                      className="form-control filter-input-vip"
+                      value={fullname}
+                      onChange={(e) => setFullname(e.target.value)}
+                    />
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <label style={{ color: '#f3cf7a', fontSize: '13px', fontWeight: 700, display: 'block', marginBottom: '6px' }}>Tên người dùng (Username)</label>
                     <input
                       type="text"
                       className="form-control filter-input-vip"
@@ -135,51 +198,61 @@ const Account = () => {
                   style={{
                     background: 'linear-gradient(135deg, #f3cf7a, #d4af37)',
                     color: '#090a0f',
-                    padding: '10px 24px',
-                    borderRadius: '8px',
+                    padding: '12px 28px',
+                    borderRadius: '10px',
                     fontWeight: 800,
                     border: 'none',
                     cursor: 'pointer',
-                    marginTop: '10px'
+                    marginTop: '8px'
                   }}
                 >
-                  Lưu Thay Đổi
+                  <i className="fas fa-save mr-2"></i> Lưu Thay Đổi Thông Tin
                 </button>
               </form>
             </div>
 
-            {/* Change Password */}
+            {/* Form 2: Change Password */}
             <div style={{
-              background: 'rgba(18, 20, 29, 0.85)',
-              border: '1px solid rgba(212, 175, 55, 0.22)',
+              background: 'rgba(18, 20, 29, 0.92)',
+              border: '1px solid rgba(212, 175, 55, 0.25)',
               borderRadius: '20px',
               padding: '30px',
               boxShadow: '0 15px 45px rgba(0,0,0,0.6)'
             }}>
-              <h3 style={{ fontFamily: "'Outfit', sans-serif", color: '#fff', fontSize: '20px', fontWeight: 800, marginBottom: '20px' }}>
-                Đổi Mật Khẩu
+              <h3 style={{ fontFamily: "'Outfit', sans-serif", color: '#fff', fontSize: '20px', fontWeight: 800, marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <i className="fas fa-key" style={{ color: '#f3cf7a' }}></i> Đổi Mật Khẩu Đăng Nhập
               </h3>
 
               <form onSubmit={handleChangePassword}>
                 <div className="row">
-                  <div className="col-md-6 mb-3">
+                  <div className="col-md-4 mb-3">
                     <label style={{ color: '#f3cf7a', fontSize: '13px', fontWeight: 700, display: 'block', marginBottom: '6px' }}>Mật khẩu hiện tại</label>
                     <input
                       type="password"
                       className="form-control filter-input-vip"
                       value={currentPw}
                       onChange={(e) => setCurrentPw(e.target.value)}
-                      placeholder="••••••••"
+                      placeholder="Nhập mật khẩu cũ..."
                     />
                   </div>
-                  <div className="col-md-6 mb-3">
+                  <div className="col-md-4 mb-3">
                     <label style={{ color: '#f3cf7a', fontSize: '13px', fontWeight: 700, display: 'block', marginBottom: '6px' }}>Mật khẩu mới</label>
                     <input
                       type="password"
                       className="form-control filter-input-vip"
                       value={newPw}
                       onChange={(e) => setNewPw(e.target.value)}
-                      placeholder="••••••••"
+                      placeholder="Tối thiểu 6 ký tự..."
+                    />
+                  </div>
+                  <div className="col-md-4 mb-3">
+                    <label style={{ color: '#f3cf7a', fontSize: '13px', fontWeight: 700, display: 'block', marginBottom: '6px' }}>Xác nhận mật khẩu mới</label>
+                    <input
+                      type="password"
+                      className="form-control filter-input-vip"
+                      value={confirmPw}
+                      onChange={(e) => setConfirmPw(e.target.value)}
+                      placeholder="Nhập lại mật khẩu mới..."
                     />
                   </div>
                 </div>
@@ -188,14 +261,14 @@ const Account = () => {
                   type="submit"
                   className="bordered-btn"
                   style={{
-                    padding: '10px 24px',
-                    borderRadius: '8px',
+                    padding: '12px 28px',
+                    borderRadius: '10px',
                     fontWeight: 800,
                     cursor: 'pointer',
-                    marginTop: '10px'
+                    marginTop: '8px'
                   }}
                 >
-                  Cập Nhật Mật Khẩu
+                  <i className="fas fa-shield-alt mr-2"></i> Xác Nhận Đổi Mật Khẩu
                 </button>
               </form>
             </div>

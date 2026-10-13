@@ -22,37 +22,37 @@ const Header = () => {
         <div className="row">
           <div className="col-lg-12 col-sm-12 text-center">
             <div className="main-menu-wrap" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '15px 0' }}>
-              <div className="site-logo">
-                <Link to="/">
-                  <img src="/assets/img/logo.png" alt="CineTicket Logo" onError={(e) => { e.target.style.display = 'none'; }} />
-                  <span className="site-logo-text">CINETICKET <span className="vip-tag-nav">VIP</span></span>
+              <div className="site-logo" style={{ display: 'inline-flex', alignItems: 'center' }}>
+                <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
+                  <i className="fas fa-film" style={{ fontSize: '26px', color: '#f3cf7a', filter: 'drop-shadow(0 2px 8px rgba(212, 175, 55, 0.4))' }}></i>
+                  <span className="site-logo-text">CINETICKET </span>
                 </Link>
               </div>
 
               <nav className="main-menu" style={{ display: 'block' }}>
                 <ul style={{ display: 'flex', alignItems: 'center', gap: '26px', margin: 0, padding: 0, listStyle: 'none' }}>
-                  <li><NavLink to="/" end style={({ isActive }) => ({ color: isActive ? '#f43f5e' : '#1e293b', fontWeight: 700 })}>Trang chủ</NavLink></li>
-                  <li><NavLink to="/movies" style={({ isActive }) => ({ color: isActive ? '#f43f5e' : '#1e293b', fontWeight: 700 })}>Lịch Phim</NavLink></li>
-                  <li><NavLink to="/news" style={({ isActive }) => ({ color: isActive ? '#f43f5e' : '#1e293b', fontWeight: 700 })}>Tin tức</NavLink></li>
-                  <li><NavLink to="/contact" style={({ isActive }) => ({ color: isActive ? '#f43f5e' : '#1e293b', fontWeight: 700 })}>Liên hệ</NavLink></li>
+                  <li><NavLink to="/" end style={({ isActive }) => ({ color: isActive ? '#f3cf7a' : '#cbd5e1', fontWeight: 700 })}>Trang chủ</NavLink></li>
+                  <li><NavLink to="/movies" style={({ isActive }) => ({ color: isActive ? '#f3cf7a' : '#cbd5e1', fontWeight: 700 })}>Lịch Phim</NavLink></li>
+                  <li><NavLink to="/news" style={({ isActive }) => ({ color: isActive ? '#f3cf7a' : '#cbd5e1', fontWeight: 700 })}>Tin tức</NavLink></li>
+                  <li><NavLink to="/contact" style={({ isActive }) => ({ color: isActive ? '#f3cf7a' : '#cbd5e1', fontWeight: 700 })}>Liên hệ</NavLink></li>
                   <li>
                     <div className="header-icons">
-                      <Link className="shopping-cart" to="/cart" title="Giỏ vé của bạn" style={{ position: 'relative', fontSize: '19px', color: '#f43f5e' }}>
+                      <Link className="shopping-cart" to="/cart" title="Giỏ vé của bạn" style={{ position: 'relative', fontSize: '19px', color: '#f3cf7a' }}>
                         <i className="fas fa-shopping-cart"></i>
                         {totalCartCount > 0 && (
                           <span style={{
                             position: 'absolute',
                             top: '-8px',
                             right: '-10px',
-                            background: 'linear-gradient(135deg, #f43f5e, #fb923c)',
-                            color: '#ffffff',
+                            background: 'linear-gradient(135deg, #f3cf7a, #d4af37)',
+                            color: '#090a0f',
                             borderRadius: '50%',
                             fontSize: '11px',
-                            fontWeight: 800,
+                            fontWeight: 900,
                             padding: '2px 6px',
                             minWidth: '18px',
                             textAlign: 'center',
-                            boxShadow: '0 2px 6px rgba(244, 63, 94, 0.4)'
+                            boxShadow: '0 2px 6px rgba(212, 175, 55, 0.4)'
                           }}>
                             {totalCartCount}
                           </span>
@@ -66,7 +66,7 @@ const Header = () => {
                         type="button"
                         className="account-toggle"
                         onClick={() => setAccountMenuOpen(!accountMenuOpen)}
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1e293b', fontWeight: 700 }}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#cbd5e1', fontWeight: 700 }}
                       >
                         <i className="fas fa-crown" style={{ color: user.role === 'admin' ? '#ef4444' : '#f59e0b' }}></i> {user.username}
                         {user.role === 'admin' && (

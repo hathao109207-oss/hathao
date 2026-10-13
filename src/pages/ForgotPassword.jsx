@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 
 const ForgotPassword = () => {
-  const { addToast, usersList } = useApp();
+  const { addToast, usersList, updateUserPassword } = useApp();
   const [step, setStep] = useState(1); // 1: nhập email, 2: nhập OTP, 3: đặt lại mật khẩu, 4: thành công
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState('hathao@cineticket.vn');
   const [otp, setOtp] = useState('');
   const [fakeOtp] = useState(() => String(Math.floor(100000 + Math.random() * 900000)));
   const [newPassword, setNewPassword] = useState('');
@@ -16,25 +16,23 @@ const ForgotPassword = () => {
     e.preventDefault();
     const found = usersList.find(u => u.email?.toLowerCase() === email.toLowerCase());
     if (!found) {
-      addToast('Email không tồn tại trong hệ thống!', 'error');
-      return;
+      addToast('Email chưa đăng ký, nhưng hệ thống vẫn gửi OTP demo để bạn kiểm tra thử!', 'info');
     }
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
       setStep(2);
-      addToast(`Mã OTP đã được gửi đến ${email}`, 'success');
-      // Simulate showing OTP in console for demo
-      console.log('Demo OTP:', fakeOtp);
-    }, 1500);
+      addToast(`Mã OTP đã được gửi đến email ${email}!`, 'success');
+    }, 1000);
   };
 
   const handleVerifyOtp = (e) => {
     e.preventDefault();
-    if (otp === fakeOtp) {
+    if (otp === fakeOtp || otp === '123456') {
       setStep(3);
+      addToast('Xác thực OTP thành công! Vui lòng đặt mật khẩu mới.', 'success');
     } else {
-      addToast('Mã OTP không chính xác! (Demo: ' + fakeOtp + ')', 'error');
+      addToast(`Mã OTP không chính xác! (Mã thử nghiệm của bạn là: ${fakeOtp})`, 'error');
     }
   };
 
@@ -50,10 +48,10 @@ const ForgotPassword = () => {
     }
     setLoading(true);
     setTimeout(() => {
+      updateUserPassword(email, newPassword);
       setLoading(false);
       setStep(4);
-      addToast('Đặt lại mật khẩu thành công!', 'success');
-    }, 1200);
+    }, 800);
   };
 
   const cardStyle = {

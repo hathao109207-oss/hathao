@@ -199,19 +199,60 @@ export const ageRatings = [
   { code: "K", label: "K - Dành cho trẻ em", color: "#8b5cf6" },
 ];
 
-export const showtimes = [
-  { id: 101, movie_id: 1, cinema_name: "CineTicket Quận 1 VIP", room: "Phòng VIP 01 - Laser IMAX", show_date: "2026-10-12", show_time: "14:30" },
-  { id: 102, movie_id: 1, cinema_name: "CineTicket Quận 1 VIP", room: "Phòng VIP 02 - Dolby Atmos", show_date: "2026-10-12", show_time: "18:00" },
-  { id: 103, movie_id: 1, cinema_name: "CineTicket Landmark 81", room: "Phòng VIP Gold Class", show_date: "2026-10-12", show_time: "20:45" },
-  { id: 104, movie_id: 2, cinema_name: "CineTicket Quận 1 VIP", room: "Phòng VIP 01 - Laser IMAX", show_date: "2026-10-12", show_time: "15:00" },
-  { id: 105, movie_id: 2, cinema_name: "CineTicket Landmark 81", room: "Phòng VIP Gold Class", show_date: "2026-10-12", show_time: "19:15" },
-  { id: 106, movie_id: 3, cinema_name: "CineTicket Quận 1 VIP", room: "Phòng Standard 03", show_date: "2026-10-12", show_time: "16:40" },
-  { id: 107, movie_id: 4, cinema_name: "CineTicket Landmark 81", room: "Phòng VIP Gold Class", show_date: "2026-10-12", show_time: "21:30" },
-  { id: 108, movie_id: 5, cinema_name: "CineTicket Quận 1 VIP", room: "Phòng Standard 02", show_date: "2026-10-12", show_time: "17:15" },
-  { id: 109, movie_id: 6, cinema_name: "CineTicket Quận 1 VIP", room: "Phòng Gia Đình VIP", show_date: "2026-10-12", show_time: "10:30" },
-  { id: 110, movie_id: 7, cinema_name: "CineTicket Landmark 81", room: "Phòng Cổ Điển 01", show_date: "2026-10-12", show_time: "20:00" },
-  { id: 111, movie_id: 10, cinema_name: "CineTicket Landmark 81", room: "Phòng VIP Gold Class", show_date: "2026-10-12", show_time: "19:00" }
+export const cinemas = [
+  {
+    id: 1,
+    name: "CineTicket Quận 1 VIP",
+    address: "Tầng 5, Vincom Đồng Khởi, 72 Lê Thánh Tôn, Bến Nghé, Quận 1, TP.HCM",
+    phone: "028 3822 9999",
+    rooms: ["Phòng VIP 01 - Laser IMAX", "Phòng VIP 02 - Dolby Atmos", "Phòng Standard 03"]
+  },
+  {
+    id: 2,
+    name: "CineTicket Landmark 81",
+    address: "Tầng B1, Vincom Center Landmark 81, 720A Điện Biên Phủ, Bình Thạnh, TP.HCM",
+    phone: "028 3899 8181",
+    rooms: ["Phòng VIP Gold Class", "Phòng Cổ Điển 01", "Phòng IMAX 3D"]
+  },
+  {
+    id: 3,
+    name: "CineTicket Thảo Điền VIP",
+    address: "Tầng 4, Vincom Mega Mall Thảo Điền, 161 Xa Lộ Hà Nội, TP. Thủ Đức",
+    phone: "028 3744 5555",
+    rooms: ["Phòng VIP Luxury Bed", "Phòng Atmos 01"]
+  },
+  {
+    id: 4,
+    name: "CineTicket Metropolis",
+    address: "Tầng 3, Vincom Center Metropolis, 29 Liễu Giai, Ba Đình, Hà Nội",
+    phone: "024 3888 6666",
+    rooms: ["Phòng VIP Royal 01", "Phòng Dolby Atmos"]
+  }
 ];
+
+export const showtimes = [
+  { id: 101, movie_id: 1, cinema_name: "CineTicket Quận 1 VIP", room: "Phòng VIP 01 - Laser IMAX", show_date: "2026-10-13", show_time: "14:30" },
+  { id: 102, movie_id: 1, cinema_name: "CineTicket Quận 1 VIP", room: "Phòng VIP 02 - Dolby Atmos", show_date: "2026-10-13", show_time: "18:00" },
+  { id: 103, movie_id: 1, cinema_name: "CineTicket Landmark 81", room: "Phòng VIP Gold Class", show_date: "2026-10-13", show_time: "20:45" },
+  { id: 104, movie_id: 1, cinema_name: "CineTicket Thảo Điền VIP", room: "Phòng VIP Luxury Bed", show_date: "2026-10-13", show_time: "19:30" },
+  { id: 105, movie_id: 2, cinema_name: "CineTicket Quận 1 VIP", room: "Phòng VIP 01 - Laser IMAX", show_date: "2026-10-13", show_time: "15:00" },
+  { id: 106, movie_id: 2, cinema_name: "CineTicket Landmark 81", room: "Phòng VIP Gold Class", show_date: "2026-10-13", show_time: "19:15" },
+  { id: 107, movie_id: 2, cinema_name: "CineTicket Metropolis", room: "Phòng VIP Royal 01", show_date: "2026-10-13", show_time: "21:00" },
+  { id: 108, movie_id: 3, cinema_name: "CineTicket Quận 1 VIP", room: "Phòng Standard 03", show_date: "2026-10-13", show_time: "16:40" },
+  { id: 109, movie_id: 3, cinema_name: "CineTicket Landmark 81", room: "Phòng Cổ Điển 01", show_date: "2026-10-13", show_time: "18:30" },
+  { id: 110, movie_id: 4, cinema_name: "CineTicket Landmark 81", room: "Phòng VIP Gold Class", show_date: "2026-10-13", show_time: "21:30" },
+  { id: 111, movie_id: 4, cinema_name: "CineTicket Thảo Điền VIP", room: "Phòng Atmos 01", show_date: "2026-10-13", show_time: "20:15" },
+  { id: 112, movie_id: 5, cinema_name: "CineTicket Quận 1 VIP", room: "Phòng Standard 02", show_date: "2026-10-13", show_time: "17:15" },
+  { id: 113, movie_id: 6, cinema_name: "CineTicket Quận 1 VIP", room: "Phòng Gia Đình VIP", show_date: "2026-10-13", show_time: "10:30" },
+  { id: 114, movie_id: 6, cinema_name: "CineTicket Metropolis", room: "Phòng Dolby Atmos", show_date: "2026-10-13", show_time: "14:00" },
+  { id: 115, movie_id: 7, cinema_name: "CineTicket Landmark 81", room: "Phòng Cổ Điển 01", show_date: "2026-10-13", show_time: "20:00" },
+  { id: 116, movie_id: 8, cinema_name: "CineTicket Quận 1 VIP", room: "Phòng VIP 01 - Laser IMAX", show_date: "2026-10-14", show_time: "19:00" },
+  { id: 117, movie_id: 9, cinema_name: "CineTicket Metropolis", room: "Phòng Dolby Atmos", show_date: "2026-10-14", show_time: "16:30" },
+  { id: 118, movie_id: 10, cinema_name: "CineTicket Landmark 81", room: "Phòng VIP Gold Class", show_date: "2026-10-13", show_time: "19:00" }
+];
+
+export const samplePaymentProof = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='550' viewBox='0 0 400 550'><rect width='400' height='550' rx='16' fill='%230f172a'/><rect x='20' y='20' width='360' height='510' rx='12' fill='%231e293b' stroke='%2338bdf8' stroke-width='2'/><circle cx='200' cy='80' r='36' fill='%2310b981'/><path d='M188 80l8 8 16-16' stroke='%23ffffff' stroke-width='4' fill='none' stroke-linecap='round'/><text x='200' y='145' text-anchor='middle' fill='%2310b981' font-size='18' font-weight='bold' font-family='sans-serif'>GIAO D%E1%BB%8ACH TH%C3%80NH C%C3%94NG</text><text x='200' y='185' text-anchor='middle' fill='%23ffffff' font-size='28' font-weight='900' font-family='sans-serif'>305,000 VND</text><text x='200' y='210' text-anchor='middle' fill='%2394a3b8' font-size='12' font-family='sans-serif'>12/10/2026 11:20:15</text><line x1='40' y1='235' x2='360' y2='235' stroke='%23334155' stroke-dasharray='4'/><text x='50' y='265' fill='%2394a3b8' font-size='13' font-family='sans-serif'>Ng%C3%A2n h%C3%A0ng nh%E1%BA%ADn:</text><text x='350' y='265' text-anchor='end' fill='%23ffffff' font-size='13' font-weight='bold' font-family='sans-serif'>MB Bank</text><text x='50' y='300' fill='%2394a3b8' font-size='13' font-family='sans-serif'>S%E1%BB%91 t%C3%A0i kho%E1%BA%A3n:</text><text x='350' y='300' text-anchor='end' fill='%2338bdf8' font-size='13' font-weight='bold' font-family='sans-serif'>098765432199</text><text x='50' y='335' fill='%2394a3b8' font-size='13' font-family='sans-serif'>Ng%C6%B0%E1%BB%9Di th%E1%BB%A5 h%C6%B0%E1%BB%9Fng:</text><text x='350' y='335' text-anchor='end' fill='%23ffffff' font-size='13' font-weight='bold' font-family='sans-serif'>CINETICKET VIETNAM</text><text x='50' y='370' fill='%2394a3b8' font-size='13' font-family='sans-serif'>N%E1%BB%99i dung:</text><text x='350' y='370' text-anchor='end' fill='%23f3cf7a' font-size='13' font-weight='bold' font-family='sans-serif'>CT99120 Avatar 2</text><text x='50' y='405' fill='%2394a3b8' font-size='13' font-family='sans-serif'>M%C3%A3 giao d%E1%BB%8Bch:</text><text x='350' y='405' text-anchor='end' fill='%23ffffff' font-size='12' font-family='sans-serif'>FT262858921820</text><rect x='40' y='445' width='320' height='55' rx='8' fill='%230f172a'/><text x='200' y='478' text-anchor='middle' fill='%2338bdf8' font-size='13' font-weight='bold' font-family='sans-serif'>%E2%9C%93 Bi%C3%AAn lai chuy%E1%BB%83n kho%E1%BA%A3n h%E1%BB%A3p l%E1%BB%87</text></svg>";
+
 
 export const snacks = [
   {
@@ -313,4 +354,34 @@ export const defaultUsers = [
     role: "member"
   }
 ];
+
+export const supportedBanks = [
+  { code: "MB", name: "MB Bank (Ngân hàng Quân Đội)" },
+  { code: "VCB", name: "Vietcombank (Ngoại Thương)" },
+  { code: "TCB", name: "Techcombank (Kỹ Thương)" },
+  { code: "ACB", name: "ACB (Á Châu)" },
+  { code: "BIDV", name: "BIDV (Đầu Tư & Phát Triển)" },
+  { code: "ICB", name: "VietinBank (Công Thương)" },
+  { code: "VPB", name: "VPBank (Việt Nam Thịnh Vượng)" },
+  { code: "TPB", name: "TPBank (Tiên Phong)" },
+  { code: "STB", name: "Sacombank (Sài Gòn Thương Tín)" },
+  { code: "VIB", name: "VIB (Quốc Tế)" },
+  { code: "MOMO", name: "Ví Điện Tử MoMo" }
+];
+
+export const defaultAdminPaymentSettings = {
+  qrType: "upload", // "upload" (dùng ảnh QR tải lên/URL) hoặc "vietqr" (sinh mã theo STK)
+  qrImageUrl: "https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=2|99|0337191740|NGUYEN%20NGOC%20HA%20THAO|hthaongn@gmail.com|0|0|CINETICKET%20VIP%20ADMIN",
+  bankName: "MB Bank (Ngân hàng Quân Đội)",
+  bankCode: "MB",
+  accountNumber: "098765432199",
+  accountHolder: "NGUYỄN NGỌC HÀ THẢO",
+  branch: "12 Trịnh Đình Thảo, Tân Phú, TP. HCM",
+  transferSyntax: "CT{orderRef}",
+  instructionNote: "Vui lòng quét mã QR trên ứng dụng ngân hàng hoặc MoMo để chuyển khoản chính xác số tiền và nội dung.",
+  // MoMo settings
+  momoPhone: "0337191740",
+  momoHolder: "NGUYỄN NGỌC HÀ THẢO",
+  momoQrImageUrl: "https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=2|99|0337191740|NGUYEN%20NGOC%20HA%20THAO|0|0|CINETICKET%20MOMO"
+};
 

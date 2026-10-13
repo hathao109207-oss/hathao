@@ -112,14 +112,32 @@ const Cart = () => {
                                 type="button"
                                 onClick={() => updateCartQty(item.id, item.qty - 1)}
                                 style={{ background: 'none', border: 'none', color: '#f3cf7a', padding: '4px 10px', cursor: 'pointer', fontWeight: 800 }}
+                                title="Giảm số lượng"
                               >
                                 -
                               </button>
-                              <span style={{ color: '#fff', padding: '0 8px', fontWeight: 700, fontSize: '14px' }}>{item.qty}</span>
+                              <input
+                                type="number"
+                                min="1"
+                                max="20"
+                                value={item.qty}
+                                onChange={(e) => updateCartQty(item.id, Math.max(1, parseInt(e.target.value) || 1))}
+                                style={{
+                                  width: '44px',
+                                  textAlign: 'center',
+                                  background: 'transparent',
+                                  border: 'none',
+                                  color: '#fff',
+                                  fontWeight: 700,
+                                  fontSize: '14px'
+                                }}
+                                title="Nhập số lượng vé"
+                              />
                               <button
                                 type="button"
                                 onClick={() => updateCartQty(item.id, item.qty + 1)}
                                 style={{ background: 'none', border: 'none', color: '#f3cf7a', padding: '4px 10px', cursor: 'pointer', fontWeight: 800 }}
+                                title="Tăng số lượng"
                               >
                                 +
                               </button>

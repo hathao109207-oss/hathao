@@ -7,7 +7,7 @@ const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const { loginUser, addToast } = useApp();
+  const { registerUser, addToast } = useApp();
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
@@ -16,8 +16,12 @@ const Register = () => {
       addToast('Mật khẩu nhập lại không khớp!', 'error');
       return;
     }
-    loginUser(username.trim(), password);
-    addToast('Đăng ký tài khoản VIP thành công!', 'success');
+    registerUser({
+      username: username.trim(),
+      fullname: username.trim(),
+      email: email.trim(),
+      password
+    });
     navigate('/');
   };
 

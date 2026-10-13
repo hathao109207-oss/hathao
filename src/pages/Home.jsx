@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { movies, newsArticles } from '../data/mockData';
+import { newsArticles } from '../data/mockData';
 import { useApp } from '../context/AppContext';
 
 const Home = () => {
-  const { addToCart, updateBooking } = useApp();
+  const { movieList, addToCart, updateBooking } = useApp();
   const [sliderIndex, setSliderIndex] = useState(0);
 
-  const featuredMovies = movies.slice(0, 8);
+  const featuredMovies = movieList.slice(0, 8);
 
   const sliderSlides = [
     {
@@ -253,8 +253,8 @@ const Home = () => {
 
           <div className="row mt-4">
             {featuredMovies.map((movie) => (
-              <div key={movie.id} className="col-lg-3 col-md-6 text-center">
-                <div className="single-product-item">
+              <div key={movie.id} className="col-lg-3 col-md-6 mb-4 text-center d-flex align-items-stretch">
+                <div className="single-product-item w-100">
                   <div className="product-image">
                     <span className="product-badge-imdb">
                       <i className="fas fa-star" style={{ color: '#f3cf7a', marginRight: '4px' }}></i> {movie.rating}
@@ -267,39 +267,33 @@ const Home = () => {
                       />
                     </Link>
                   </div>
-                  <h3>
-                    <Link to={`/movie/${movie.id}`} style={{ color: '#fff', textDecoration: 'none' }} title={movie.title}>
-                      {movie.title}
-                    </Link>
-                  </h3>
-                  <p className="product-price">
-                    <span>{movie.genre_name}</span>
-                    <span>{movie.price.toLocaleString('vi-VN')} đ</span>
-                  </p>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <Link
-                      to={`/seat?movieId=${movie.id}`}
-                      className="cart-btn"
-                      onClick={() => updateBooking({ movieId: movie.id })}
-                      style={{ flex: 1 }}
-                    >
-                      <i className="fas fa-ticket-alt"></i> Đặt Vé
-                    </Link>
-                    <button
-                      type="button"
-                      onClick={() => addToCart(movie, 1)}
-                      className="cart-btn"
-                      style={{
-                        width: '42px',
-                        flex: 'none',
-                        background: 'rgba(212, 175, 55, 0.15)',
-                        color: '#f3cf7a',
-                        border: '1px solid rgba(212, 175, 55, 0.3)'
-                      }}
-                      title="Thêm vào giỏ vé"
-                    >
-                      <i className="fas fa-shopping-cart"></i>
-                    </button>
+                  <div className="single-product-item-body">
+                    <h3>
+                      <Link to={`/movie/${movie.id}`} title={movie.title}>
+                        {movie.title}
+                      </Link>
+                    </h3>
+                    <p className="product-price">
+                      <span>{movie.genre_name}</span>
+                      <span>{movie.price.toLocaleString('vi-VN')} đ</span>
+                    </p>
+                    <div className="product-btn-group">
+                      <Link
+                        to={`/seat?movieId=${movie.id}`}
+                        className="movie-book-btn"
+                        onClick={() => updateBooking({ movieId: movie.id, seats: [] })}
+                      >
+                        <i className="fas fa-ticket-alt"></i> Đặt Vé
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => addToCart(movie, 1)}
+                        className="movie-cart-btn"
+                        title="Thêm vào giỏ vé"
+                      >
+                        <i className="fas fa-shopping-cart"></i>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
