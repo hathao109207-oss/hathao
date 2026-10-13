@@ -29,10 +29,22 @@ export const AppProvider = ({ children }) => {
     }
   });
 
+  const MOVIES_DATA_VERSION = 'movies_data_price_5000_v1';
+
   // Movies state (supports admin add/delete/update)
   const [movieList, setMovieList] = useState(() => {
-    const saved = localStorage.getItem('cineticket_movies');
-    return saved ? JSON.parse(saved) : initialMovies;
+    try {
+      const activeMoviesVersion = localStorage.getItem('cineticket_movies_version');
+      if (activeMoviesVersion !== MOVIES_DATA_VERSION) {
+        localStorage.removeItem('cineticket_movies');
+        localStorage.setItem('cineticket_movies_version', MOVIES_DATA_VERSION);
+        return initialMovies;
+      }
+      const saved = localStorage.getItem('cineticket_movies');
+      return saved ? JSON.parse(saved) : initialMovies;
+    } catch (e) {
+      return initialMovies;
+    }
   });
 
   // Cart state
