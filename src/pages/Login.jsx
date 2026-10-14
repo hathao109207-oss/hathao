@@ -5,7 +5,7 @@ import { useApp } from '../context/AppContext';
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const { loginUser } = useApp();
+  const { loginUser, usersList } = useApp();
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
@@ -106,9 +106,12 @@ const Login = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      setUsername('admin');
-                      setPassword('admin123');
-                      loginUser('admin', 'admin123');
+                      const adminUser = usersList?.find(u => String(u.id) === '1' || u.role === 'admin');
+                      const un = adminUser?.username || 'admin';
+                      const pw = adminUser?.password || 'admin123';
+                      setUsername(un);
+                      setPassword(pw);
+                      loginUser(un, pw);
                       navigate('/admin');
                     }}
                     style={{
@@ -125,16 +128,19 @@ const Login = () => {
                       justifyContent: 'space-between'
                     }}
                   >
-                    <span><i className="fas fa-user-shield mr-2"></i> Đăng nhập Admin (admin / admin123)</span>
+                    <span><i className="fas fa-user-shield mr-2"></i> Đăng nhập Admin ({usersList?.find(u => String(u.id) === '1' || u.role === 'admin')?.username || 'admin'})</span>
                     <i className="fas fa-arrow-right"></i>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => {
-                      setUsername('hathao');
-                      setPassword('123456');
-                      loginUser('hathao', '123456');
+                      const memberUser = usersList?.find(u => String(u.id) === '2' || u.role === 'member');
+                      const un = memberUser?.username || 'hathao';
+                      const pw = memberUser?.password || '123456';
+                      setUsername(un);
+                      setPassword(pw);
+                      loginUser(un, pw);
                       navigate('/');
                     }}
                     style={{
@@ -151,7 +157,7 @@ const Login = () => {
                       justifyContent: 'space-between'
                     }}
                   >
-                    <span><i className="fas fa-crown mr-2"></i> Đăng nhập Member VIP (hathao / 123456)</span>
+                    <span><i className="fas fa-crown mr-2"></i> Đăng nhập Member VIP ({usersList?.find(u => String(u.id) === '2' || u.role === 'member')?.username || 'hathao'})</span>
                     <i className="fas fa-arrow-right"></i>
                   </button>
                 </div>

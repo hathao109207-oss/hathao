@@ -4,24 +4,50 @@ import { movies as initialMovies, showtimes, defaultUsers, genres as initialGenr
 const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
+  const USERS_DATA_VERSION = 'cineticket_users_v2';
+
   // Users list
   const [usersList, setUsersList] = useState(() => {
-    const saved = localStorage.getItem('cineticket_users_list');
-    return saved ? JSON.parse(saved) : defaultUsers;
+    try {
+      const activeUsersVersion = localStorage.getItem('cineticket_users_version');
+      const saved = localStorage.getItem('cineticket_users_list');
+      if (activeUsersVersion !== USERS_DATA_VERSION || !saved) {
+        localStorage.setItem('cineticket_users_version', USERS_DATA_VERSION);
+        if (saved) {
+          try {
+            const parsed = JSON.parse(saved);
+            const merged = parsed.map(u => {
+              const def = defaultUsers.find(d => String(d.id) === String(u.id) || d.username === u.username);
+              if (def) {
+                return { ...def, ...u, phone: u.phone || def.phone };
+              }
+              return u;
+            });
+            localStorage.setItem('cineticket_users_list', JSON.stringify(merged));
+            return merged;
+          } catch (e) {
+            // fallback to defaultUsers
+          }
+        }
+        localStorage.setItem('cineticket_users_list', JSON.stringify(defaultUsers));
+        return defaultUsers;
+      }
+      return JSON.parse(saved);
+    } catch (e) {
+      return defaultUsers;
+    }
   });
 
   // Quản lý phiên đăng nhập:
-  // Mặc định luôn là null (khách vãng lai, chưa đăng nhập bất kỳ tài khoản nào).
-  // Sử dụng sessionStorage để duy trì phiên làm việc trong tab hiện tại khi người dùng chủ động đăng nhập.
-  // Đồng thời dọn dẹp 'cineticket_user' trong localStorage cũ nếu còn sót lại từ các lần test trước.
+  // Lưu cả vào localStorage và sessionStorage để khi người dùng tắt trình duyệt / thoát ra vô lại
+  // thì thông tin tài khoản và phiên đăng nhập vẫn được giữ nguyên đầy đủ.
   const [user, setUser] = useState(() => {
     try {
-      if (typeof window !== 'undefined' && window.localStorage) {
-        localStorage.removeItem('cineticket_user');
-      }
-      if (typeof window !== 'undefined' && window.sessionStorage) {
-        const saved = sessionStorage.getItem('cineticket_user');
-        return saved ? JSON.parse(saved) : null;
+      if (typeof window !== 'undefined') {
+        const local = localStorage.getItem('cineticket_user');
+        const session = sessionStorage.getItem('cineticket_user');
+        const saved = local ? JSON.parse(local) : (session ? JSON.parse(session) : null);
+        return saved;
       }
       return null;
     } catch (e) {
@@ -149,18 +175,27 @@ export const AppProvider = ({ children }) => {
   const [toasts, setToasts] = useState([]);
 
   useEffect(() => {
-    localStorage.setItem('cineticket_users_list', JSON.stringify(usersList));
+    try {
+      localStorage.setItem('cineticket_users_list', JSON.stringify(usersList));
+      if (user) {
+        const fresh = usersList.find(u => (u.id && user.id && String(u.id) === String(user.id)) || u.username === user.username || u.email === user.email);
+        if (fresh && (fresh.fullname !== user.fullname || fresh.username !== user.username || fresh.email !== user.email || fresh.phone !== user.phone || fresh.password !== user.password)) {
+          setUser(fresh);
+        }
+      }
+    } catch (e) {
+      // ignore storage errors
+    }
   }, [usersList]);
 
   useEffect(() => {
     try {
-      if (typeof window !== 'undefined' && window.localStorage) {
-        localStorage.removeItem('cineticket_user');
-      }
-      if (typeof window !== 'undefined' && window.sessionStorage) {
+      if (typeof window !== 'undefined') {
         if (user) {
+          localStorage.setItem('cineticket_user', JSON.stringify(user));
           sessionStorage.setItem('cineticket_user', JSON.stringify(user));
         } else {
+          localStorage.removeItem('cineticket_user');
           sessionStorage.removeItem('cineticket_user');
         }
       }
@@ -366,23 +401,63 @@ export const AppProvider = ({ children }) => {
 
   // User Management
   const updateUserProfile = (userId, profileData) => {
-    setUsersList(prev => prev.map(u => (u.id === userId || u.username === profileData.username) ? { ...u, ...profileData } : u));
-    if (user && (user.id === userId || user.username === profileData.username)) {
-      setUser(prev => ({ ...prev, ...profileData }));
+    const cleanData = {
+      fullname: (profileData.fullname ?? '').trim(),
+      username: (profileData.username ?? '').trim(),
+      email: (profileData.email ?? '').trim(),
+      phone: (profileData.phone ?? '').trim()
+    };
+
+    const updatedList = usersList.map(u => {
+      const isTarget = (userId && String(u.id) === String(userId)) ||
+                       (user && String(u.id) === String(user.id)) ||
+                       (user && u.username?.toLowerCase() === user.username?.toLowerCase()) ||
+                       (user && u.email?.toLowerCase() === user.email?.toLowerCase());
+      if (isTarget) {
+        return { ...u, ...cleanData };
+      }
+      return u;
+    });
+
+    setUsersList(updatedList);
+    try {
+      localStorage.setItem('cineticket_users_list', JSON.stringify(updatedList));
+    } catch (e) {}
+
+    if (user) {
+      const updatedUser = { ...user, ...cleanData };
+      setUser(updatedUser);
+      try {
+        localStorage.setItem('cineticket_user', JSON.stringify(updatedUser));
+        sessionStorage.setItem('cineticket_user', JSON.stringify(updatedUser));
+      } catch (e) {}
     }
     addToast('Đã cập nhật thông tin tài khoản thành công!', 'success');
   };
 
   const updateUserPassword = (emailOrUsername, newPassword) => {
-    const q = emailOrUsername.trim().toLowerCase();
-    setUsersList(prev => prev.map(u => {
-      if (u.email?.toLowerCase() === q || u.username?.toLowerCase() === q) {
+    const q = (emailOrUsername || '').trim().toLowerCase();
+    const updatedList = usersList.map(u => {
+      const isMatch = (u.email?.toLowerCase() === q || u.username?.toLowerCase() === q) ||
+                      (user && String(u.id) === String(user.id));
+      if (isMatch) {
         return { ...u, password: newPassword };
       }
       return u;
-    }));
-    if (user && (user.email?.toLowerCase() === q || user.username?.toLowerCase() === q)) {
-      setUser(prev => ({ ...prev, password: newPassword }));
+    });
+
+    setUsersList(updatedList);
+    try {
+      localStorage.setItem('cineticket_users_list', JSON.stringify(updatedList));
+    } catch (e) {}
+
+    if (user) {
+      const updatedUser = { ...user, password: newPassword };
+      setUser(updatedUser);
+      try {
+        localStorage.setItem('cineticket_user', JSON.stringify(updatedUser));
+        sessionStorage.setItem('cineticket_user', JSON.stringify(updatedUser));
+      } catch (e) {}
     }
     addToast('Đặt lại mật khẩu thành công!', 'success');
     return true;
@@ -395,26 +470,44 @@ export const AppProvider = ({ children }) => {
       password: userData.password || '123456',
       fullname: userData.fullname || userData.username,
       email: userData.email || `${userData.username.trim()}@cineticket.vn`,
+      phone: userData.phone || '',
       role: userData.role || 'member'
     };
-    setUsersList(prev => [...prev, newUser]);
+    const updated = [...usersList, newUser];
+    setUsersList(updated);
+    try {
+      localStorage.setItem('cineticket_users_list', JSON.stringify(updated));
+    } catch (e) {}
     addToast(`Đã tạo tài khoản thành viên "${newUser.username}"!`, 'success');
     return newUser;
   };
 
   const deleteUser = (userId) => {
-    if (user && user.id === userId) {
+    if (user && String(user.id) === String(userId)) {
       addToast('Không thể xóa tài khoản đang đăng nhập!', 'error');
       return;
     }
-    setUsersList(prev => prev.filter(u => u.id !== userId));
+    const updated = usersList.filter(u => String(u.id) !== String(userId));
+    setUsersList(updated);
+    try {
+      localStorage.setItem('cineticket_users_list', JSON.stringify(updated));
+    } catch (e) {}
     addToast('Đã xóa người dùng khỏi hệ thống.', 'info');
   };
 
   const updateUserRole = (userId, newRole) => {
-    setUsersList(prev => prev.map(u => u.id === userId ? { ...u, role: newRole } : u));
-    if (user && user.id === userId) {
-      setUser(prev => ({ ...prev, role: newRole }));
+    const updated = usersList.map(u => String(u.id) === String(userId) ? { ...u, role: newRole } : u);
+    setUsersList(updated);
+    try {
+      localStorage.setItem('cineticket_users_list', JSON.stringify(updated));
+    } catch (e) {}
+    if (user && String(user.id) === String(userId)) {
+      const updatedUser = { ...user, role: newRole };
+      setUser(updatedUser);
+      try {
+        localStorage.setItem('cineticket_user', JSON.stringify(updatedUser));
+        sessionStorage.setItem('cineticket_user', JSON.stringify(updatedUser));
+      } catch (e) {}
     }
     addToast(`Đã thay đổi quyền thành ${newRole === 'admin' ? 'Quản Trị Viên' : 'Thành Viên'}!`, 'success');
   };
@@ -432,14 +525,29 @@ export const AppProvider = ({ children }) => {
 
   // Auth operations
   const loginUser = (username, password) => {
-    const q = username.trim().toLowerCase();
-    const found = usersList.find(
-      u => u.username.toLowerCase() === q || u.email.toLowerCase() === q
+    const q = (username || '').trim().toLowerCase();
+    
+    // Find matching user
+    let found = usersList.find(
+      u => u.username?.toLowerCase() === q || u.email?.toLowerCase() === q
     );
+
+    // If quick login with 'hathao' but user had changed their username
+    if (!found && q === 'hathao') {
+      found = usersList.find(u => String(u.id) === '2' || u.role === 'member');
+    }
+    // If quick login with 'admin' but user had changed their username
+    if (!found && (q === 'admin' || q.includes('admin'))) {
+      found = usersList.find(u => String(u.id) === '1' || u.role === 'admin');
+    }
 
     if (found) {
       if (found.password === password) {
         setUser(found);
+        try {
+          localStorage.setItem('cineticket_user', JSON.stringify(found));
+          sessionStorage.setItem('cineticket_user', JSON.stringify(found));
+        } catch (e) {}
         addToast(`Xin chào ${found.fullname || found.username} (${found.role === 'admin' ? 'Quản Trị Viên' : 'Thành Viên VIP'})!`, 'success');
         return { success: true, user: found };
       } else {
@@ -454,11 +562,18 @@ export const AppProvider = ({ children }) => {
         username: username.trim(),
         fullname: username.trim(),
         email: `${username.trim().toLowerCase()}@cineticket.vn`,
+        phone: '',
         password: password || '123456',
         role: isAd ? 'admin' : 'member'
       };
-      setUsersList(prev => [...prev, newUser]);
+      const updatedList = [...usersList, newUser];
+      setUsersList(updatedList);
       setUser(newUser);
+      try {
+        localStorage.setItem('cineticket_users_list', JSON.stringify(updatedList));
+        localStorage.setItem('cineticket_user', JSON.stringify(newUser));
+        sessionStorage.setItem('cineticket_user', JSON.stringify(newUser));
+      } catch (e) {}
       addToast(`Đăng nhập thành công! Chào mừng ${newUser.username}.`, 'success');
       return { success: true, user: newUser };
     }

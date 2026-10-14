@@ -343,6 +343,7 @@ export const defaultUsers = [
     password: "admin123",
     fullname: "Quản Trị Viên VIP",
     email: "admin@cineticket.vn",
+    phone: "0909123456",
     role: "admin"
   },
   {
@@ -351,6 +352,7 @@ export const defaultUsers = [
     password: "123456",
     fullname: "Nguyễn Ngọc Hà Thảo",
     email: "hathao@cineticket.vn",
+    phone: "0337191740",
     role: "member"
   }
 ];
